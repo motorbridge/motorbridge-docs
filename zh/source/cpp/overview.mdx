@@ -22,6 +22,12 @@ title: "C++ Binding 总览"
 
 > English version: [README.md](/source/cpp/overview)
 
+## ABI 元数据 helper
+
+- `motorbridge::abi_version()` 返回当前加载的 ABI 库版本。
+- `motorbridge::abi_capabilities_json()` 返回当前加载 ABI 的能力 JSON。
+- `bindings/api_surface.json` 用于跟踪 C ABI、Python、C++ 和文档接口对齐。
+
 ## Damiao 置零规则（dm-serial）
 
 - Damiao 场景下，`set_zero_position()` 前先调用 `disable()`。
@@ -89,6 +95,17 @@ int main() {
 ```
 
 RobStride 支持 `rs-00` 到 `rs-06`。C++ wrapper 的 `add_robstride_motor(...)` 调用形态一致，但 ABI 背后的参数读写会使用第 4 章通用运行参数表。
+
+C++ RobStride wrapper 已对齐 Python binding 的公开 helper：
+
+- `robstride_ping(...)`
+- `robstride_set_run_mode(...)`
+- `robstride_write_param(...)` / `robstride_write_param_i32(...)`
+- `robstride_read_param(...)` / `robstride_read_param_i32(...)`
+- `robstride_save_params(...)`
+- `robstride_reset_can_id(...)`
+- `robstride_set_position(...)` / `robstride_set_velocity(...)` / `robstride_set_current(...)`
+- `robstride_set_limits(...)`
 
 MyActuator:
 

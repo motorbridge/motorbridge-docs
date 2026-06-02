@@ -13,6 +13,32 @@ Versioning.
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-06-02
+
+### Added
+
+- Added ABI metadata entrypoints `motor_abi_version()` and
+  `motor_abi_capabilities_json()` so tools, gateways, and language bindings can
+  discover the loaded ABI version and supported transports/vendors/features.
+- Added Python metadata helpers `motorbridge.abi_version()` and
+  `motorbridge.abi_capabilities()`.
+- Added C++ metadata helpers `motorbridge::abi_version()` and
+  `motorbridge::abi_capabilities_json()`.
+- Added `bindings/api_surface.json` as the canonical binding/API surface list
+  used to keep ABI, Python, C++, and documentation aligned.
+- Added API surface regression coverage for the binding parity metadata.
+
+### Changed
+
+- Completed C++ wrapper parity with Python for RobStride helper methods:
+  `robstride_ping_host_id`, `robstride_get_param_f32_host_id`,
+  `robstride_get_fault_report`, and `robstride_set_active_report`.
+- Added C++ RobStride ID range validation to match Python binding behavior.
+- Python package version advanced to `0.4.1`.
+- Rust workspace package version advanced to `0.4.1` for release/tag
+  alignment.
+- C++ package metadata advanced to `0.4.1`.
+
 ## [0.4.0] - 2026-06-02
 
 ### Added
@@ -66,17 +92,25 @@ Versioning.
 
 ### Added
 
-- Added RobStride-specific `pos-vel-pp` and `pos-vel-csp` control paths.
+- Added RobStride-specific `pos-vel-pp` and `pos-vel-csp` control paths that
+  follow the vendor manual sequences for PP and CSP position modes.
 - Added C ABI and Python binding entrypoints for
   `robstride_send_pos_vel_pp()` and `robstride_send_pos_vel_csp()`.
 - Added Python CLI and Rust CLI support for RobStride `pos-vel-pp` and
   `pos-vel-csp`.
+- Added `robstride_posvel_timing_demo.py` to compare legacy `pos-vel`, PP, and
+  CSP timing, including full-sequence and prepared high-rate profiles.
+- Added documentation and Python code examples for RobStride PP/CSP usage and
+  high-rate `loc_ref` loops.
 
 ### Fixed
 
 - Removed the default 260 ms blocking wait from RobStride communication type 18
   parameter writes; set `MOTORBRIDGE_ROBSTRIDE_WRITE_ACK_TIMEOUT_MS` to restore
   conservative synchronous waiting.
+- Clarified the difference between RobStride full manual PP/CSP sequences and
+  high-rate prepared loops so users do not pay an `enable` ack wait every
+  control cycle.
 
 ### Changed
 
@@ -89,24 +123,51 @@ Versioning.
 ### Fixed
 
 - Fixed Python CLI RobStride scans on Windows PCAN by probing one
-  host/feedback ID at a time.
-- Fixed WebSocket gateway RobStride scans to probe requested host/feedback IDs
-  exactly and sequentially, avoid unrelated default feedback IDs, and clamp
-  default probe timing for Windows PCAN reliability.
+  host/feedback ID at a time, avoiding multiple active controllers and receive
+  workers on the same CAN channel.
+- Fixed Python CLI RobStride scan cleanup so unbound probe controllers are not
+  asked to `close_bus()`, removing the misleading `controller has no motor`
+  error after scan results.
+- Fixed Python CLI RobStride single-host scans to print `hit` and `no reply`
+  lines in probe order, so operators can see `0x01`, `0x02`, `0x03`, ... live
+  instead of seeing missed IDs only after the full scan completes.
+- Fixed WebSocket gateway RobStride scans to probe each requested host/feedback
+  ID exactly and sequentially, use request-level `channel` and `model`, avoid
+  appending unrelated default feedback IDs, and clamp default probe timing for
+  Windows PCAN reliability.
 - Fixed Windows WebSocket gateway RobStride repeated scans by releasing any
-  active RobStride session before scan probes.
+  active RobStride session before scan probes and adding a short PCAN release
+  gap after scan `close_bus()`.
+- Fixed PCAN error reporting to include names for `PCAN_ERROR_INITIALIZE` and
+  `PCAN_ERROR_ILLHW`.
 
 ### Added
 
-- Added optional `MOTORBRIDGE_WS_DEBUG=1` connection logs.
-- Added WebSocket gateway `capabilities` so MotorBridge Studio can discover
-  batch scan support.
+- Added Python scan regression coverage for the single-controller RobStride
+  probing behavior.
+- Added optional `MOTORBRIDGE_WS_DEBUG=1` connection logs for gateway TCP accept
+  and WebSocket handshake diagnostics.
+- Added the WebSocket gateway `capabilities` operation so MotorBridge Studio
+  can discover batch scan support instead of falling back to legacy per-ID
+  frontend probing.
+- Added the WebSocket gateway `batch_scan` operation for Studio compatibility.
+- Added live WebSocket `scan_progress` events for RobStride scans with
+  `start`, `probe`, `hit`, `no_reply`, and `done` phases while preserving the
+  final `scan` response.
 
 ### Changed
 
 - Python package version advanced to `0.3.7`.
 - Rust workspace package version advanced to `0.3.7` for release/tag alignment.
 - C++ package metadata advanced to `0.3.7`.
+
+## [0.3.6] - 2026-05-21
+
+### Fixed
+
+- Fixed Python CLI RobStride scans on Windows PCAN by probing one
+  host/feedback ID at a time, avoiding multiple active controllers and receive
+  workers on the same CAN channel.
 
 ## [0.3.5] - 2026-05-20
 
@@ -117,79 +178,150 @@ Versioning.
 - Added RobStride MIT encoding regression tests proving all five unified MIT
   inputs (`pos`, `vel`, `kp`, `kd`, `tau`) are encoded into the native control
   frame.
+- Added workspace lint inheritance for all Rust crates while keeping the active
+  lint set aligned with strict CI.
 
 ### Fixed
 
-- Hardened C ABI controller and motor handles with per-handle locking while
-  preserving public ABI function names and signatures.
+- Hardened C ABI controller and motor handles with per-handle locking, removing
+  same-handle concurrent-call undefined behavior while preserving the public ABI
+  function names and signatures.
 - Fixed Python binding closed-handle guards so motor methods consistently raise
   `CallError` instead of passing null pointers into the ABI.
+- Fixed unbound controller operations to return a clear error instead of
+  silently succeeding before any motor is added.
 - Fixed Python RobStride scan efficiency by opening one controller per
-  `feedback_id` candidate instead of reopening the CAN socket for every probe.
-- Fixed Damiao register type error messages and newer Clippy CI compatibility.
+  `feedback_id` candidate instead of reopening the CAN socket for every
+  `(motor_id, feedback_id)` probe.
+- Fixed Damiao register type error messages so `write_register_f32()` reports
+  `expects float` and `write_register_u32()` reports `expects uint32`.
+- Fixed CI compatibility with newer Clippy for the WebSocket handshake callback.
 
 ### Changed
 
-- Split the Python CLI implementation into the `motorbridge.cli` package while
-  preserving public entrypoints and legacy flat run arguments.
+- Split the Python CLI implementation from one large `cli.py` file into the
+  `motorbridge.cli` package while preserving public entrypoints:
+  `motorbridge.cli:main`, `python -m motorbridge.cli`, `python -m motorbridge`,
+  and legacy flat run arguments.
 - Clarified `open_can_bus()` as the cross-platform classic-CAN backend selector;
   `open_socketcan()` remains available as a compatibility alias.
-- Python package, Rust workspace crates, and C++ package metadata advanced to
-  `0.3.5`.
+- Python package version advanced to `0.3.5`.
+- Rust workspace package version advanced to `0.3.5` for release/tag alignment.
+- C++ package metadata advanced to `0.3.5`.
 
 ## [0.3.4] - 2026-05-20
 
+### Added
+
+- Added a detailed Chinese WebSocket gateway protocol manual covering every
+  JSON `op`, parameters, defaults, vendor applicability, responses, and browser
+  usage examples.
+- Added RobStride Rust/Python CLI manual test commands for read/write/readback,
+  optional store, active-report, clear-error, control smoke tests, and ID update
+  workflows.
+- Added regression coverage for RobStride parameter save responses that return
+  a non-status device reply.
+
 ### Fixed
 
-- RobStride parameter save now accepts any valid response from the target motor,
-  covering devices that reply with device-id style frames after type-22 save.
-- Damiao in-process `ensure_mode()` avoids the first-register timeout path that
-  could hang while equivalent direct write/read commands worked.
-- WS Gateway `id_set` honors the selected transport, so `--transport dm-serial`
-  does not try to initialize PEAK/PCAN on macOS.
+- Fixed `ws_gateway` `set_id` so Damiao `--transport dm-serial` is honored
+  instead of accidentally opening the SocketCAN/PCAN path.
+- Improved Damiao `ensure_control_mode()` so an initial register-10 read timeout
+  no longer prevents writing the requested mode; write verification now retries.
+- Fixed RobStride `save_parameters()` to accept valid device replies after
+  communication type `22`, avoiding false `control ack timeout: comm_type=22`
+  errors after a parameter was already written and read back successfully.
+- Fixed strict Clippy failures across `motor_core`, `motor_cli`,
+  `motor_vendor_robstride`, and `ws_gateway`.
 
 ### Changed
 
-- CI/release validation now includes stricter formatting, Clippy, and regression
-  tests for the RobStride save ACK and Damiao mode path.
-- Python package and Rust workspace crates advanced to `0.3.4`.
+- Python package version advanced to `0.3.4`.
+- Rust workspace package version advanced to `0.3.4` for release/tag alignment.
 
 ## [0.3.3] - 2026-05-19
 
 ### Added
 
-- Python package now exposes `motorbridge.__version__` and `motorbridge.get_version()`.
-- Python CLI now supports `motorbridge-cli -v` / `--version`.
-- Rust CLI now supports `motor_cli -v` / `--version`.
-- Python `robstride-write-param` and `damiao-write-param` now support unified `--store 1` persistence after a successful write/verify.
-- Rust CLI RobStride/Damiao parameter write flows are aligned with the same store semantics.
+- Added `-v` / `--version` output to the Rust CLI and Python CLI.
+- Added Python binding version helpers: `motorbridge.__version__` and
+  `motorbridge.get_version()`.
+- Added `--store 1` to Python `robstride-write-param` and `damiao-write-param`
+  subcommands for unified write, verify, and persist workflows.
+- Added Rust CLI Damiao `read-param` / `write-param` support with matching
+  `--type`, `--verify`, and `--store` semantics.
 
 ### Fixed
 
-- Python CLI disables argparse long-option abbreviation so invalid options such as
-  `robstride-write-param --mode save` are rejected instead of being interpreted as `--model save`.
-- RobStride type 22 save now sends the official payload and waits for a status ACK instead of being fire-and-forget.
+- Python CLI now disables argparse long-option abbreviation for the root parser,
+  subcommands, and legacy run parser. Invalid options such as `--mode save` on
+  `robstride-write-param` are rejected instead of being misparsed as `--model save`.
+- RobStride `save_parameters()` now waits for the protocol status ACK after
+  sending communication type `22`.
 
 ### Changed
 
 - Python package version advanced to `0.3.3`.
-- Rust workspace crates advanced to `0.3.3`.
+- Rust workspace package version advanced to `0.3.3` for release/tag alignment.
 
 ## [0.3.2] - 2026-05-18
 
+### Added
+
+- Added RobStride fault-report diagnostics to the C ABI and Python SDK via
+  `motor_handle_robstride_get_fault_report` / `Motor.robstride_get_fault_report()`.
+- Python CLI state printing now includes non-zero RobStride `fault_raw` and
+  `warning_raw` values.
+
 ### Fixed
 
-- RobStride fault report frames update the fault cache without overwriting the latest motion state,
-  preventing fault data from surfacing as bogus `-720 deg`, `-50 rad/s`, or `0 C` feedback.
-- Python bindings and CLI can query the latest vendor fault state while keeping the last valid
-  status feedback separate.
+- RobStride `FAULT_REPORT` frames no longer overwrite the latest motion state.
+  Fault reports now update only the fault cache, so fault payloads are not
+  exposed as bogus `-720 deg` / `-50 rad/s` / `0 C` feedback.
+- RobStride `FAULT_REPORT` frames no longer advance the control status ACK
+  sequence, avoiding false command acknowledgements.
+- RobStride `clear_error()` clears the local cached fault report only after the
+  device acknowledges the clear request.
 
-## [0.3.1] - 2026-05-17
+### Changed
+
+- Python package version advanced to `0.3.2`.
+- Rust workspace package version advanced to `0.3.2` for release/tag alignment.
+
+## [0.3.1] - 2026-05-15
+
+### Fixed
+
+- Python CLI RobStride `mit`, `pos-vel`, and `vel` now align their control
+  startup sequence with the Rust CLI and WebSocket gateway: disable torque,
+  set and verify `run_mode` via `0x7005`, re-enable torque, then send targets.
+  This fixes cases where direct Python CLI `pos-vel` could enable the motor but
+  fail to move until a Rust CLI or gateway scan/control path had prepared the mode.
+
+### Changed
+
+- Python package version advanced to `0.3.1`.
+- Rust workspace package version advanced to `0.3.1` for release/tag alignment.
+
+## [0.3.0] - 2026-05-15
 
 ### Added
 
-- Added ABI/Python accessors for detailed motor fault state and vendor-specific fault codes.
-- Added RobStride fault clear support through the existing stop/clear-fault path.
+- RobStride clear-fault support is now exposed through the unified clear-error path.
+  `motor_handle_clear_error` sends RobStride communication type `4` with `data[0]=1`.
+- RobStride active-report support is now exposed across Rust CLI, Python CLI/SDK,
+  ABI, and WebSocket gateway.
+- New ABI symbol: `motor_handle_robstride_set_active_report`.
+- New Python SDK method: `Motor.robstride_set_active_report(enabled)`.
+- New WS gateway operation: `{"op":"set_active_report","enabled":true}`.
+- RobStride communication type `21` fault reports are decoded into raw fault/warning
+  words plus documented fault and warning bits for diagnostics.
+
+### Documentation
+
+- Added RobStride bring-up notes for `EPScan_time(0x7026)`, including
+  `EPScan_time=3` as the recommended initial 20 ms report interval for arm calibration.
+- Added CLI, Python, ABI, and WS examples for RobStride clear-error and active-report.
 
 ## [0.2.9] - 2026-05-14
 
@@ -212,7 +344,7 @@ Versioning.
 
 ### Changed
 
-- Python package version advanced to `0.2.9`.
+- Python binding package version advanced to `0.2.9`.
 - Rust workspace crates advanced to `0.2.9`.
 
 ## [0.2.8] - 2026-05-12
@@ -229,7 +361,7 @@ Versioning.
 
 ### Changed
 
-- Python package version advanced to `0.2.8`.
+- Python binding package version advanced to `0.2.8`.
 - Rust workspace crates advanced to `0.2.8`.
 
 ## [0.2.6] - 2026-05-09
@@ -239,7 +371,7 @@ Versioning.
 - RobStride host-id-specific ABI helpers for exact scan probing from Python:
   `motor_handle_robstride_ping_host_id` and `motor_handle_robstride_get_param_f32_host_id`.
 - Python SDK wrappers `robstride_ping_host_id(...)` and `robstride_get_param_f32_host_id(...)`.
-- Release qualification coverage for Rust core/CLI, Python binding/CLI,
+- Release test note `release_test_notes/0.2.6.md` covering Rust core/CLI, Python binding/CLI,
   package smoke checks, and full RobStride/Damiao CLI command examples.
 
 ### Changed
@@ -338,10 +470,10 @@ Versioning.
 
 ### Added
 
-- Linux USB-CAN (`slcan`) quick guide in root README (EN/ZH), including `slcand` setup and
-  `--channel slcan0` usage examples.
+- Linux CANable candleLight/gs_usb quick guide in root README (EN/ZH), including candleLight/gs_usb setup and
+  `--channel can0` usage examples.
 - Channel quick reference in `motor_cli/README.md` and `motor_cli/README.zh-CN.md` covering:
-  - Linux SocketCAN channels (`can0`, `slcan0`) and Linux rule "no `@bitrate` in channel name"
+  - Linux SocketCAN channels (`can0`, `can1`) and Linux rule "no `@bitrate` in channel name"
   - Windows PCAN channel mapping (`can0/can1`) with optional `@bitrate`
 
 ### Changed
@@ -359,7 +491,7 @@ Versioning.
 
 ### Usage
 
-- Linux `slcan` setup and examples:
-  - `README.md` / `README.zh-CN.md` section: "Linux USB-CAN (`slcan`) Quick Guide"
+- Linux CANable candleLight/gs_usb setup and examples:
+  - `README.md` / `README.zh-CN.md` section: "Linux CANable candleLight/gs_usb Quick Guide"
 - Channel compatibility and parameter rules:
   - `motor_cli/README.md` / `motor_cli/README.zh-CN.md` section: "Channel Quick Reference"

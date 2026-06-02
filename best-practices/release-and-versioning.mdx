@@ -27,9 +27,9 @@ Current source alignment:
 
 | Component | Source file | Current version |
 |-----------|-------------|-----------------|
-| Planned Git release tag | `motorbridge` repository | `v0.4.0` |
-| Python package | `bindings/python/pyproject.toml` | `0.4.0` |
-| Rust workspace crates | `Cargo.toml` `[workspace.package]` | `0.4.0` |
+| Planned Git release tag | `motorbridge` repository | `v0.4.1` |
+| Python package | `bindings/python/pyproject.toml` | `0.4.1` |
+| Rust workspace crates | `Cargo.toml` `[workspace.package]` | `0.4.1` |
 
 ```
 MAJOR.MINOR.PATCH[-PRERELEASE]
@@ -49,9 +49,9 @@ Examples:
 
 | Category | Example | Stability |
 |----------|---------|-----------|
-| Stable | `0.4.0` | Production ready |
-| Pre-release | `0.4.0a1` | Testing only |
-| Development | `0.4.0.dev1` | Internal use |
+| Stable | `0.4.1` | Production ready |
+| Pre-release | `0.4.1a1` | Testing only |
+| Development | `0.4.1.dev1` | Internal use |
 
 ## Installation Channels
 
@@ -62,7 +62,7 @@ Examples:
 pip install motorbridge
 
 # Specific version
-pip install motorbridge==0.4.0
+pip install motorbridge==0.4.1
 
 # Upgrade
 pip install --upgrade motorbridge
@@ -72,7 +72,7 @@ pip install --upgrade motorbridge
 
 ```bash
 # Install from TestPyPI
-pip install -i https://test.pypi.org/simple/ motorbridge==0.4.0a1
+pip install -i https://test.pypi.org/simple/ motorbridge==0.4.1a1
 ```
 
 <Warning>
@@ -83,7 +83,7 @@ Pre-release versions may have breaking changes and are not recommended for produ
 
 ```bash
 # Install from Git
-pip install git+https://github.com/tianrking/motorbridge@v0.4.0
+pip install git+https://github.com/tianrking/motorbridge@v0.4.1
 
 # Install specific branch
 pip install git+https://github.com/tianrking/motorbridge@main
@@ -126,11 +126,11 @@ Stay on stable versions, upgrade for bug fixes:
 
 ```bash
 # Current: any older 0.x release
-# Upgrade to latest stable: 0.4.0
+# Upgrade to latest stable: 0.4.1
 pip install --upgrade motorbridge
 
 # Or specific patch
-pip install motorbridge==0.4.0
+pip install motorbridge==0.4.1
 ```
 
 ### Early Adopter
@@ -139,13 +139,13 @@ Test pre-releases in development:
 
 ```bash
 # Development environment
-pip install -i https://test.pypi.org/simple/ motorbridge==0.4.0b1
+pip install -i https://test.pypi.org/simple/ motorbridge==0.4.1b1
 
 # Test your code
 python3 -m pytest tests/
 
 # Production stays on stable
-pip install motorbridge==0.4.0
+pip install motorbridge==0.4.1
 ```
 
 ### Pinned Versions
@@ -154,14 +154,14 @@ For reproducible deployments:
 
 ```requirements.txt
 # requirements.txt
-motorbridge==0.4.0
+motorbridge==0.4.1
 ```
 
 Or with version constraints:
 
 ```requirements.txt
 # Allow patches, block minor/major changes
-motorbridge>=0.4.0,<0.5.0
+motorbridge>=0.4.1,<0.5.0
 ```
 
 ## API Stability
@@ -179,6 +179,15 @@ motorbridge>=0.4.0,<0.5.0
 - Deprecation warnings before removal
 
 ## Changelog
+
+### v0.4.1
+
+- Added ABI metadata discovery through `motor_abi_version()` and `motor_abi_capabilities_json()`
+- Added Python helpers `motorbridge.abi_version()` and `motorbridge.abi_capabilities()`
+- Added C++ helpers `motorbridge::abi_version()` and `motorbridge::abi_capabilities_json()`
+- Completed C++ RobStride wrapper parity with Python
+- Added `bindings/api_surface.json` as the binding/API alignment checklist
+- Advanced Python, Rust workspace, and C++ metadata to `0.4.1`
 
 ### v0.4.0
 
@@ -287,7 +296,7 @@ For maintainers releasing new versions:
 1. **Update version:**
    ```bash
    # Update [project].version in bindings/python/pyproject.toml
-   version = "0.4.0"
+   version = "0.4.1"
    ```
 
 2. **Update changelog:**
@@ -296,8 +305,8 @@ For maintainers releasing new versions:
 
 3. **Tag release:**
    ```bash
-   git tag v0.4.0
-   git push origin v0.4.0
+   git tag v0.4.1
+   git push origin v0.4.1
    ```
 
 4. **Build package:**
@@ -314,7 +323,7 @@ For maintainers releasing new versions:
 
 6. **Verify installation:**
    ```bash
-   pip install -i https://test.pypi.org/simple/ motorbridge==0.4.0
+   pip install -i https://test.pypi.org/simple/ motorbridge==0.4.1
    python3 -m pytest tests/
    ```
 
@@ -335,7 +344,7 @@ Once a version is uploaded to PyPI, it cannot be overwritten. Always increment t
 
 ```bash
 # Bad: Trying to re-upload same version
-twine upload dist/motorbridge-0.4.0.tar.gz
+twine upload dist/motorbridge-0.4.1.tar.gz
 # Error: File already exists
 
 # Solution: Increment version

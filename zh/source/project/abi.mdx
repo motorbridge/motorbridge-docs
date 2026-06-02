@@ -22,6 +22,14 @@ cargo build -p motor_abi --release
 
 ABI 对外保持一套统一控制接口。
 
+## ABI 元数据
+
+- `motor_abi_version()` 返回当前加载的 ABI 库版本字符串。
+- `motor_abi_capabilities_json()` 返回稳定 JSON 能力文档，描述已支持的 transport、vendor、生命周期操作、控制模式和厂商扩展能力。
+- Python 中对应 `motorbridge.abi_version()` 和 `motorbridge.abi_capabilities()`。
+- C++ 中对应 `motorbridge::abi_version()` 和 `motorbridge::abi_capabilities_json()`。
+- `bindings/api_surface.json` 用于跟踪 ABI、Python、C++ 和文档的接口对齐。
+
 统一模式 ID（`motor_handle_ensure_mode`）：
 
 - `1 = MIT`

@@ -22,6 +22,18 @@ Artifacts:
 
 The ABI keeps one unified control surface across vendors.
 
+## ABI Metadata
+
+- `motor_abi_version()` returns the loaded ABI library version string.
+- `motor_abi_capabilities_json()` returns a stable JSON capability document for
+  supported transports, vendors, lifecycle operations, control modes, and
+  vendor-specific features.
+- Python exposes the same information through `motorbridge.abi_version()` and
+  `motorbridge.abi_capabilities()`.
+- C++ exposes the same information through `motorbridge::abi_version()` and
+  `motorbridge::abi_capabilities_json()`.
+- Binding parity is tracked in `bindings/api_surface.json`.
+
 Unified mode IDs (`motor_handle_ensure_mode`):
 
 - `1 = MIT`
