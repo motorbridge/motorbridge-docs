@@ -8,13 +8,14 @@ The motorbridge SDK supports multiple transport layers for communicating with mo
 
 ## Overview
 
-The SDK exposes three transport constructors:
+The SDK exposes four transport constructors:
 
 | Constructor | Protocol | Use Case |
 |-------------|----------|----------|
 | `Controller(channel)` | SocketCAN | Standard CAN 2.0, most common |
 | `Controller.from_socketcanfd(channel)` | CAN-FD | High-bandwidth, Hexfellow motors |
 | `Controller.from_dm_serial(port, baud)` | Serial | Damiao serial bridge adapter |
+| `Controller.from_dm_device(device_type, channel)` | DM_Device SDK | Damiao USB2CANFD / USB2CANFD_DUAL / LINKX4C adapters |
 
 ## SocketCAN (Standard CAN)
 
@@ -141,6 +142,73 @@ with Controller.from_dm_serial("/dev/ttyACM0", baud=921600) as ctrl:
 
 - Damiao only
 
+## DM_Device SDK
+
+DaMiao DM_Device_SDK controls CAN/CAN FD adapter hardware. In motorbridge, this
+transport is wired to the Damiao motor protocol only, and the adapter must be in
+USB mode.
+
+### Supported Adapter Types
+
+| Adapter | SDK enum | Channels | `dm_device_type` | `dm_channel` |
+|---------|----------|----------|------------------|--------------|
+| USB2CANFD | `USB2CANFD` | 1 | `usb2canfd` | `0` |
+| USB2CANFD_DUAL | `USB2CANFD_DUAL` | 2 | `usb2canfd-dual` | `0` / `1` |
+| LINKX4C | `LINKX4C` | 4 | `linkx4c` | `0` / `1` / `2` / `3` |
+
+### Python Usage
+
+```python
+from motorbridge import Controller
+
+# USB2CANFD_DUAL channel 0
+with Controller.from_dm_device("usb2canfd-dual", "0") as ctrl:
+    motor = ctrl.add_damiao_motor(0x04, 0x14, "4310")
+
+# LINKX4C channel 0
+with Controller.from_dm_device("linkx4c", "0") as ctrl:
+    motor = ctrl.add_damiao_motor(0x04, 0x14, "4310")
+```
+
+### CLI Usage
+
+```bash
+# Scan all channels on USB2CANFD_DUAL: 0 and 1
+motorbridge-cli scan \
+  --vendor damiao \
+  --transport dm-device \
+  --dm-device-type usb2canfd-dual \
+  --model 4310 \
+  --start-id 1 \
+  --end-id 16
+
+# Scan all channels on LINKX4C: 0, 1, 2, 3
+motorbridge-cli scan \
+  --vendor damiao \
+  --transport dm-device \
+  --dm-device-type linkx4c \
+  --model 4310 \
+  --start-id 1 \
+  --end-id 8
+
+# Control one physical channel
+motorbridge-cli run \
+  --vendor damiao \
+  --transport dm-device \
+  --dm-device-type linkx4c \
+  --dm-channel 0 \
+  --model 4310 \
+  --motor-id 0x04 \
+  --feedback-id 0x14 \
+  --mode enable \
+  --loop 1
+```
+
+<Note>
+In scan mode, omit `--dm-channel` to scan every channel for the selected
+adapter. Pass `--dm-channel` only when you want one physical channel.
+</Note>
+
 ### Serial Port Setup (3 Platforms)
 
 Linux:
@@ -183,6 +251,8 @@ Windows (PowerShell):
 What motor vendor are you using?
 │
 ├── Hexfellow ──→ from_socketcanfd (required)
+│
+├── Damiao with DM_Device USB2CANFD/DUAL/LINKX4C ──→ from_dm_device
 │
 ├── Damiao with USB-CAN adapter ──→ from_dm_serial
 │

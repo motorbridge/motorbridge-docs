@@ -72,9 +72,11 @@ motorbridge-cli run [OPTIONS]
 |--------|---------|-------------|
 | `--vendor` | `damiao` | Motor vendor: damiao, myactuator, robstride, hightorque, hexfellow |
 | `--channel` | `can0` | CAN interface name |
-| `--transport` | `auto` | Transport: auto, socketcan, socketcanfd, dm-serial |
+| `--transport` | `auto` | Transport: auto, socketcan, socketcanfd, dm-serial, dm-device |
 | `--serial-port` | `/dev/ttyACM0` | Serial port (for dm-serial transport) |
 | `--serial-baud` | `921600` | Serial baud rate |
+| `--dm-device-type` | `usb2canfd-dual` | DM_Device adapter: usb2canfd, usb2canfd-dual, linkx4c |
+| `--dm-channel` | `0` | DM_Device SDK channel: usb2canfd=0, usb2canfd-dual=0/1, linkx4c=0/1/2/3 |
 | `--model` | `4340` | Motor model string |
 | `--motor-id` | `0x01` | Motor CAN ID (hex supported) |
 | `--feedback-id` | `0x11` | Feedback CAN ID (hex supported) |
