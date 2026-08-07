@@ -31,7 +31,7 @@ python3 -m pip install motorbridge
 ### Install Specific Version
 
 ```bash
-python3 -m pip install motorbridge==0.4.1
+python3 -m pip install motorbridge==0.5.0
 ```
 
 ### Upgrade Existing Installation
@@ -171,7 +171,7 @@ For testing bleeding-edge features before official release:
 python3 -m pip install --pre -i https://test.pypi.org/simple/ motorbridge
 
 # Or install a specific pre-release version
-python3 -m pip install -i https://test.pypi.org/simple/ motorbridge==0.4.1a1
+python3 -m pip install -i https://test.pypi.org/simple/ motorbridge==0.5.0a1
 ```
 
 <Note>
@@ -183,7 +183,7 @@ Pre-release versions may be unstable. Do not use in production.
 ### From Source (Git)
 
 ```bash
-git clone https://github.com/tianrking/motorbridge
+git clone https://github.com/motorbridge/motorbridge
 cd motorbridge
 cargo build -p motor_abi --release
 cd bindings/python
@@ -287,7 +287,7 @@ System-wide install:
 
 ```bash
 curl -L -o macOS_Library_for_PCANUSB_v0.13.tar.gz \
-  https://raw.githubusercontent.com/tianrking/motorbridge/main/third_party/pcan/macos/macOS_Library_for_PCANUSB_v0.13.tar.gz
+  https://raw.githubusercontent.com/motorbridge/motorbridge/main/third_party/pcan/macos/macOS_Library_for_PCANUSB_v0.13.tar.gz
 tar -xzf macOS_Library_for_PCANUSB_v0.13.tar.gz
 cd PCBUSB
 sudo ./install.sh

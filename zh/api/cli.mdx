@@ -2,6 +2,8 @@
 title: CLI 命令行工具
 ---
 
+# API：motorbridge-cli
+
 <mintly-toc>
 
 `motorbridge-cli` 命令行工具提供无需编写 Python 代码即可进行快速电机测试、扫描和配置。
@@ -76,12 +78,12 @@ motorbridge-cli run [选项]
 | `--transport` | `auto` | 传输方式：auto, socketcan, socketcanfd, dm-serial, dm-device |
 | `--serial-port` | `/dev/ttyACM0` | 串口（用于 dm-serial 传输） |
 | `--serial-baud` | `921600` | 串口波特率 |
-| `--dm-device-type` | `usb2canfd-dual` | DM_Device 适配器：usb2canfd, usb2canfd-dual, linkx4c |
-| `--dm-channel` | `0` | DM_Device SDK 通道：usb2canfd=0, usb2canfd-dual=0/1, linkx4c=0/1/2/3 |
+| `--dm-device-type` | — | DM_Device 适配器类型（用于 dm-device 传输）：usb2canfd, usb2canfd-dual, linkx4c |
+| `--dm-channel` | — | DM_Device 通道。usb2canfd: 0；usb2canfd-dual: 0/1；linkx4c: 0..3。省略则扫描所有通道。 |
 | `--model` | `4340` | 电机型号字符串 |
 | `--motor-id` | `0x01` | 电机 CAN ID（支持十六进制） |
 | `--feedback-id` | `0x11` | 反馈 CAN ID（支持十六进制） |
-| `--mode` | `mit` | 控制模式：enable, disable, mit, pos-vel, vel, force-pos, ping, zero, set-zero, save, zero-by-offset, read-param, write-param |
+| `--mode` | `mit` | 控制模式：enable, disable, mit, pos-vel, pos-vel-pp, pos-vel-csp, vel, force-pos, ping, zero, set-zero, firmware-version, save, zero-by-offset, read-param, write-param |
 | `--loop` | `100` | 控制迭代次数 |
 | `--dt-ms` | `20` | 控制周期（毫秒） |
 | `--ensure-mode` | `1` | 是否在控制前确保模式 |

@@ -63,6 +63,18 @@ ABI 对外保持一套统一控制接口。
 - MyActuator：`motor_controller_add_myactuator_motor(...)`
 - HighTorque：`motor_controller_add_hightorque_motor(...)`
 
+## ABI 元数据
+
+ABI 暴露元数据入口，便于工具、网关与各语言绑定发现当前加载的 ABI 版本与所支持的
+传输/厂商/能力：
+
+- `motor_abi_version()` — 返回当前加载的 ABI 版本字符串。
+- `motor_abi_capabilities_json()` — 返回描述所支持传输、厂商、模式与操作的 JSON 字符串。
+
+它们与 Python helper `motorbridge.abi_version()` / `motorbridge.abi_capabilities()` 以及
+C++ helper `motorbridge::abi_version()` / `motorbridge::abi_capabilities_json()` 镜像对应。
+权威的绑定/API 接口面清单为 `bindings/api_surface.json`，用于保持 ABI、Python、C++ 与文档对齐。
+
 ## 统一模式与厂商原生协议映射
 
 | 统一模式 | Damiao 原生 | Hexfellow 原生 | RobStride 原生 | MyActuator 原生 | HighTorque 原生 |
@@ -98,12 +110,15 @@ RobStride 扩展接口：
 - `motor_handle_robstride_set_device_id`
 - `motor_handle_robstride_write_param_i8/u8/u16/u32/f32`
 - `motor_handle_robstride_get_param_i8/u8/u16/u32/f32`
+- `motor_handle_robstride_send_pos_vel_pp`（PP 序列）
+- `motor_handle_robstride_send_pos_vel_csp`（CSP 序列）
 
 ## 典型调用顺序
 
 1. 选择传输层构造器：
    - `motor_controller_new_socketcan(channel)`（通用路径）
    - `motor_controller_new_dm_serial(serial_port, baud)`（仅 Damiao 串口桥；跨平台，可用 `/dev/ttyACM0` 或 `COM3`）
+   - `motor_controller_new_dm_device(dm_device_type, dm_channel)`（仅 Damiao，DM_Device SDK：`USB2CANFD` / `USB2CANFD_DUAL` / `LINKX4C`）
 2. `motor_controller_add_<vendor>_motor`
 3. 可选：`motor_controller_enable_all`
 4. 可选：`motor_handle_ensure_mode`

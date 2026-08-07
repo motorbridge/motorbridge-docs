@@ -2,18 +2,37 @@
 title: "MotorBridge 0.3.9 Release Test Note"
 ---
 
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.3.9 Release Test Note
+
 Date: 2026-05-26
 
-MotorBridge 0.3.9 fixes RobStride unified feedback-request semantics.
-RobStride does not have a private-protocol single-shot status request, and ping
-replies do not synthesize `MotorState`. The unified `request_feedback()` path
-for RobStride is therefore a non-blocking no-op.
+## Summary
 
-Key checks:
+Finalizes the RobStride state-semantics clarification introduced in v0.3.7:
+`ping` replies do not synthesize `MotorState`.
 
-- `request_feedback()` on RobStride does not send ping and does not block.
-- `robstride_ping()` remains the explicit connectivity check.
-- Fresh RobStride position/velocity values use typed parameter reads such as
-  `0x7019 mechPos` and `0x701B mechVel`.
-- Python, Rust workspace, and C++ package metadata are aligned to `0.3.9`.
+## Version Alignment
 
+| Component | Version |
+|---|---|
+| Git release tag | `v0.3.9` |
+| Rust workspace crates | `0.3.9` |
+| Python package | `0.3.9` |
+| C++ package metadata | `0.3.9` |
+
+## Key Changes
+
+### Fixed
+
+- Changed RobStride handling of the unified `request_feedback()` ABI call to a
+  non-blocking no-op instead of issuing a blocking `ping`.
+- Avoided misleading RobStride state semantics: `ping` replies do not
+  synthesize `MotorState`, so `request_feedback() -> get_state()` no longer
+  appears to refresh state when it cannot.
+- Documented the correct RobStride state-query choices.
+
+## See Also
+
+- [Changelog](/source/repository/changelog)

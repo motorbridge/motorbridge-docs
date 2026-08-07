@@ -2,6 +2,10 @@
 title: "Python Binding Overview"
 ---
 
+<Note>Source: `bindings/python/README.md`</Note>
+
+# motorbridge Python SDK
+
 {/* channel-compat-note */}
 ## Channel Compatibility (PCAN + slcan + CAN-FD + Damiao Serial Bridge)
 
@@ -26,7 +30,7 @@ If this is your first time in this folder, read in this order:
    Purpose: Python binding overview (install, API scope, common commands).
 2. [examples/README.md](/source/python/examples/overview) (English) / [examples/READMEzh_cn.md](/zh/source/python/examples/overview) (Chinese)
    Purpose: practical demo index and run instructions (from simplest to advanced).
-2.5. [`../motorbridge-docs`](https://github.com/tianrking/motorbridge/tree/main/../motorbridge-docs)
+2.5. [`../motorbridge-docs`](https://github.com/motorbridge/motorbridge/tree/main/../motorbridge-docs)
    Purpose: canonical Mintlify documentation site (tutorial + API style docs).
 3. [get_started/README.md](/source/python/get-started/overview) / [get_started/README.zh-CN.md](/zh/source/python/get-started/overview)
    Purpose: pip-first onboarding path (install -> scan -> run).
@@ -44,14 +48,9 @@ Notes:
 ## Scope
 Packaging note:
 
-- Current package target version: `0.4.1`.
+- Current package target version: `0.5.0`.
 - Version checks are available through `motorbridge.__version__`, `motorbridge.get_version()`, and `motorbridge-cli -v`.
 - Published wheel includes `motor_abi` shared library and `ws_gateway` binary for that platform.
-- ABI metadata helpers:
-  - `motorbridge.abi_version()` returns the loaded ABI library version.
-  - `motorbridge.abi_capabilities()` returns the loaded ABI capability JSON as a Python `dict`.
-- `0.4.1` adds ABI capability/version discovery and keeps Python/C++ binding
-  parity tracked in `bindings/api_surface.json`.
 - After `pip install motorbridge`, gateway binary path is typically:
   `.../site-packages/motorbridge/bin/ws_gateway` (or `ws_gateway.exe` on Windows).
 

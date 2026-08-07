@@ -1,0 +1,42 @@
+---
+title: "MotorBridge 0.4.5 发布测试说明"
+---
+
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.4.5 发布测试说明
+
+日期：2026-06-05
+
+## 概述
+
+新增实验性 RobStride 标准帧厂商路径（`robstride_cia402`、`robstride_mit`）与硬件图库媒体。
+
+## 版本对齐
+
+| 组件 | 版本 |
+|---|---|
+| Git 发布标签 | `v0.4.5` |
+| Rust workspace crates | `0.4.5` |
+| Python 包 | `0.4.5` |
+| C++ 包元数据 | `0.4.5` |
+
+## 主要变化
+
+### 新增
+
+- 实验性 RobStride 标准帧厂商路径：`robstride_cia402`（CANopen/CiA402，`F_CMD=1`）与 `robstride_mit`（MIT，`F_CMD=2`）。暴露核心 CLI 入口与文档，但尚未达到量产可用。
+- 硬件图库媒体与常见 CAN、达妙适配器文档。
+
+### 修复
+
+- 改进 Damiao `ensure_control_mode()`：模式寄存器验证失败时在下一次 readback 前重试 `RID 10` 写入，使用保守的共享 20ms 重试间隔。
+- 修复 motor CLI 默认值的 Clippy 严格告警。
+
+### 变更
+
+- 文档化 RobStride 协议 ID 角色（私有、CANopen/CiA402、MIT 路径）。
+
+## 相关
+
+- [实验性 RobStride 路径](/zh/source/vendors/robstride-experimental)

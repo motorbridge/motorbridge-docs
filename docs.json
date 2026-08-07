@@ -14,7 +14,7 @@
   },
   "topbarCtaButton": {
     "type": "github",
-    "url": "https://github.com/tianrking/motorbridge"
+    "url": "https://github.com/motorbridge/motorbridge"
   },
   "navigation": {
     "tabs": [
@@ -49,7 +49,8 @@
               "api/controller",
               "api/motor",
               "api/mode-and-state",
-              "api/cli"
+              "api/cli",
+              "api/abi-metadata"
             ]
           },
           {
@@ -74,13 +75,29 @@
               "source/index",
               "source/repository/overview",
               "source/repository/changelog",
-              "source/repository/release-test-notes/0-4-1",
-              "source/repository/release-test-notes/0-3-9",
-              "source/repository/release-test-notes/0-3-8",
-              "source/repository/release-test-notes/0-3-7",
-              "source/repository/release-test-notes/0-3-5",
-              "source/repository/release-test-notes/0-3-3",
-              "source/repository/release-test-notes/0-2-9",
+              {
+                "group": "Release Test Notes",
+                "pages": [
+                  "source/repository/release-test-notes/0-5-0",
+                  "source/repository/release-test-notes/0-4-9",
+                  "source/repository/release-test-notes/0-4-8",
+                  "source/repository/release-test-notes/0-4-7",
+                  "source/repository/release-test-notes/0-4-6",
+                  "source/repository/release-test-notes/0-4-5",
+                  "source/repository/release-test-notes/0-4-4",
+                  "source/repository/release-test-notes/0-4-3",
+                  "source/repository/release-test-notes/0-4-2",
+                  "source/repository/release-test-notes/0-4-1",
+                  "source/repository/release-test-notes/0-4-0",
+                  "source/repository/release-test-notes/0-3-9",
+                  "source/repository/release-test-notes/0-3-8",
+                  "source/repository/release-test-notes/0-3-7",
+                  "source/repository/release-test-notes/0-3-6",
+                  "source/repository/release-test-notes/0-3-5",
+                  "source/repository/release-test-notes/0-3-3",
+                  "source/repository/release-test-notes/0-2-9"
+                ]
+              },
               "source/repository/contributing",
               "source/repository/code-of-conduct",
               "source/repository/security",
@@ -109,16 +126,6 @@
             "pages": [
               "source/python/overview",
               "source/python/get-started/overview",
-              "source/python/get-started/courses/00-enable-and-status",
-              "source/python/get-started/courses/01-scan",
-              "source/python/get-started/courses/02-register-rw",
-              "source/python/get-started/courses/03-mode-switch-method",
-              "source/python/get-started/courses/04-mode-mit",
-              "source/python/get-started/courses/05-mode-pos-vel",
-              "source/python/get-started/courses/06-mode-vel",
-              "source/python/get-started/courses/07-mode-force-pos",
-              "source/python/get-started/courses/08-mode-mixed-switch",
-              "source/python/get-started/courses/09-multi-motor",
               "source/python/examples/overview",
               "source/python/damiao-api",
               "source/python/damiao-binding",
@@ -153,6 +160,12 @@
             ]
           },
           {
+            "group": "Source: Transports",
+            "pages": [
+              "source/transports/dm-device"
+            ]
+          },
+          {
             "group": "Source: Integrations",
             "pages": [
               "source/integrations/overview",
@@ -164,7 +177,8 @@
             "group": "Source: Tools & Vendors",
             "pages": [
               "source/tools/reliability/overview",
-              "source/vendors/hightorque/overview"
+              "source/vendors/hightorque/overview",
+              "source/vendors/robstride-experimental"
             ]
           }
         ]
@@ -200,7 +214,8 @@
               "zh/api/controller",
               "zh/api/motor",
               "zh/api/mode-and-state",
-              "zh/api/cli"
+              "zh/api/cli",
+              "zh/api/abi-metadata"
             ]
           },
           {
@@ -223,7 +238,27 @@
             "group": "源码：仓库",
             "pages": [
               "zh/source/index",
-              "zh/source/repository/overview"
+              "zh/source/repository/overview",
+              {
+                "group": "发布测试说明",
+                "pages": [
+                  "zh/source/repository/release-test-notes/0-5-0",
+                  "zh/source/repository/release-test-notes/0-4-9",
+                  "zh/source/repository/release-test-notes/0-4-8",
+                  "zh/source/repository/release-test-notes/0-4-7",
+                  "zh/source/repository/release-test-notes/0-4-6",
+                  "zh/source/repository/release-test-notes/0-4-5",
+                  "zh/source/repository/release-test-notes/0-4-4",
+                  "zh/source/repository/release-test-notes/0-4-3",
+                  "zh/source/repository/release-test-notes/0-4-2",
+                  "zh/source/repository/release-test-notes/0-4-1",
+                  "zh/source/repository/release-test-notes/0-4-0",
+                  "zh/source/repository/release-test-notes/0-3-9",
+                  "zh/source/repository/release-test-notes/0-3-8",
+                  "zh/source/repository/release-test-notes/0-3-7",
+                  "zh/source/repository/release-test-notes/0-3-6"
+                ]
+              }
             ]
           },
           {
@@ -249,7 +284,6 @@
             "pages": [
               "zh/source/python/overview",
               "zh/source/python/get-started/overview",
-              "zh/source/python/get-started/courses/overview",
               "zh/source/python/examples/overview",
               "zh/source/python/damiao-api",
               "zh/source/python/damiao-python-reference"
@@ -283,6 +317,12 @@
             ]
           },
           {
+            "group": "源码：传输",
+            "pages": [
+              "zh/source/transports/dm-device"
+            ]
+          },
+          {
             "group": "源码：集成",
             "pages": [
               "zh/source/integrations/ws-gateway/overview",
@@ -292,7 +332,8 @@
           {
             "group": "源码：工具与厂商",
             "pages": [
-              "zh/source/tools/reliability/overview"
+              "zh/source/tools/reliability/overview",
+              "zh/source/vendors/robstride-experimental"
             ]
           }
         ]
@@ -305,7 +346,7 @@
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/tianrking/motorbridge"
+      "github": "https://github.com/motorbridge/motorbridge"
     }
   },
   "search": {

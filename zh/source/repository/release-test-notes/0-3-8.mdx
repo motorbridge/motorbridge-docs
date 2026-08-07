@@ -1,0 +1,40 @@
+---
+title: "MotorBridge 0.3.8 发布测试说明"
+---
+
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.3.8 发布测试说明
+
+日期：2026-05-26
+
+## 概述
+
+新增遵循厂商手册 PP/CSP 序列的 RobStride `pos-vel-pp` 与 `pos-vel-csp` 控制路径，移除 type 18 参数写入的默认阻塞等待。
+
+## 版本对齐
+
+| 组件 | 版本 |
+|---|---|
+| Git 发布标签 | `v0.3.8` |
+| Rust workspace crates | `0.3.8` |
+| Python 包 | `0.3.8` |
+| C++ 包元数据 | `0.3.8` |
+
+## 主要变化
+
+### 新增
+
+- RobStride 专用 `pos-vel-pp` 与 `pos-vel-csp` 控制路径。
+- C ABI 与 Python 绑定入口 `robstride_send_pos_vel_pp()` / `robstride_send_pos_vel_csp()`。
+- Python CLI 与 Rust CLI 支持 RobStride `pos-vel-pp` / `pos-vel-csp`。
+- `robstride_posvel_timing_demo.py`，对比 legacy `pos-vel`、PP 与 CSP 时序（含全序列与预备高速 profile）。
+
+### 修复
+
+- 移除 RobStride 通信类型 18 参数写入的默认 260ms 阻塞等待；设置 `MOTORBRIDGE_ROBSTRIDE_WRITE_ACK_TIMEOUT_MS` 可恢复保守的同步等待。
+- 澄清 RobStride 全手动 PP/CSP 序列与高速预备循环的差异，避免每个控制周期都付一次 `enable` ACK 等待。
+
+## 相关
+
+- [RobStride 参数表](/zh/reference/robstride-parameter-tables)

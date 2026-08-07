@@ -1,0 +1,41 @@
+---
+title: "MotorBridge 0.5.0 发布测试说明"
+---
+
+<Note>Source: tag `v0.5.0` diff（上游 CHANGELOG 尚无条目）</Note>
+
+# MotorBridge 0.5.0 发布测试说明
+
+日期：2026-07-22
+
+## 概述
+
+RobStride `rs-05` 速度/转矩限值对齐 RS05 手册、rs 速度归一化范围修正，以及 RobStride 固件版本请求与应答解码。同时进行 `tianrking` → `motorbridge` 的组织更名。
+
+## 版本对齐
+
+| 组件 | 版本 |
+|---|---|
+| Git 发布标签 | `v0.5.0` |
+| Rust workspace crates | `0.5.0` |
+| Python 包 | `0.5.0` |
+| C++ 包元数据 | `0.5.0` |
+
+## 主要变化
+
+### 新增
+
+- RobStride 固件版本请求与应答解码（`5e54fe1`）。
+
+### 修复
+
+- 修正 rs 速度归一化范围（`082cbb8`）。
+- 将 `rs-05` 速度与转矩限值对齐 RS05 手册（`bb5134e`）。
+
+### 变更
+
+- 将 README、Cargo 元数据、SECURITY/CoC 联系方式、pyproject 中的 `tianrking` 引用替换为 `motorbridge`（`bec79fb`）。`v0.5.0` 标签本身指向 `082cbb8`（rs-05 修复）；组织更名与后续 URL 修正在标签之后进入 `main`。
+
+## 相关
+
+- [RobStride 参数表](/zh/reference/robstride-parameter-tables)

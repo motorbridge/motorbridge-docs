@@ -95,12 +95,15 @@ Recommended: client calls `{"op":"capabilities"}` on connect and adapts UI/flows
   "op": "capabilities",
   "data": {
     "api_version": "v1",
+    "gateway_version": "v0.5.0",
+    "batch_scan": true,
+    "robstride_exact_host_scan": true,
     "default_vendor": "damiao",
     "vendors": {
       "damiao": {
-        "transports": ["auto", "socketcan", "socketcanfd", "dm-serial"],
+        "transports": ["auto", "socketcan", "socketcanfd", "dm-serial", "dm-device"],
         "modes": ["mit", "pos_vel", "vel", "force_pos"],
-        "ops_unified": ["scan", "set_id", "enable", "disable", "stop", "state_once", "status", "verify"],
+        "ops_unified": ["scan", "set_id", "enable", "disable", "stop", "state_once", "status", "verify", "damiao_state_many"],
         "ops_vendor_native": ["write_register_u32", "write_register_f32", "get_register_u32", "get_register_f32"]
       },
       "robstride": {
@@ -132,6 +135,25 @@ Recommended: client calls `{"op":"capabilities"}` on connect and adapts UI/flows
   }
 }
 ```
+
+## Multi-Joint State & Auth Notes
+
+- **`damiao_state_many`:** refresh every discovered Damiao joint in
+  one logical request over `dm-serial`. State snapshots include `motor_id`,
+  `feedback_id`, and `model`, so browser HMIs can merge whole-arm telemetry by
+  joint instead of treating all feedback as the active target. State reads
+  request fresh feedback with a bounded timeout before returning.
+- **Token auth:** browser clients may send `MOTORBRIDGE_WS_TOKEN` in
+  the WebSocket URL query as `?motorbridge_ws_token=...` (header-based auth and
+  non-loopback token requirements are unchanged).
+- **Single-motor command scoping:** one-motor operations no longer
+  fan out across multiple discovered motors; they are scoped to the explicit
+  requested target.
+- **RobStride scans:** probe each requested host/feedback ID exactly
+  and sequentially (Windows PCAN-safe). Already-discovered IDs are skipped in
+  later passes.
+- **`param_stream enabled=false`:** disabling the stream no longer
+  opens or reopens hardware sessions.
 
 ## Build
 

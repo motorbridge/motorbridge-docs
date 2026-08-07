@@ -153,7 +153,47 @@ MyActuator 不支持 MIT 模式。RobStride 的 MIT 支持有限。
 **抛出：** `CallError` 失败时
 
 <Note>
-RobStride 支持 POS_VEL 模式。
+RobStride 支持 POS_VEL 模式。`vlim` 为 `0` 时跳过 `limit_spd`（`0x7017`）写入，电机保留上次设置的速度限制，仅写 `loc_ref`（`0x7016`）；需更新速度限制时传非零 `vlim`。PP/CSP 变体 `robstride_send_pos_vel_pp` / `robstride_send_pos_vel_csp`
+遵循厂商手册 PP/CSP 序列，对其速度/加速度寄存器同样应用 `> 0` 守卫；高速循环请使用预备 profile，每周期直接写 `loc_ref`。
+</Note>
+
+---
+
+### `robstride_send_pos_vel_pp(pos, vel_max, acc_set)`（RobStride）
+
+发送 PP模式命令，电机以受限速度和加速度移动到目标位置。
+
+**参数：**
+
+| 名称 | 类型 | 描述 |
+|------|------|------|
+| `pos` | `float` | 目标位置（弧度）→ 写 `loc_ref`（`0x7016`） |
+| `vel_max` | `float` | 最大速度（rad/s）→ 写 `vel_max`（`0x7024`） |
+| `acc_set` | `float` | 加速度（rad/s²）→ 写 `acc_set`（`0x7025`） |
+
+**返回：** `None`
+
+**抛出：** `CallError` 失败时
+
+---
+
+### `robstride_send_pos_vel_csp(pos, vlim)`（RobStride）
+
+发送 CSP模式命令，电机以受限速度移动到目标位置。
+
+**参数：**
+
+| 名称 | 类型 | 描述 |
+|------|------|------|
+| `pos` | `float` | 目标位置（弧度）→ 写 `loc_ref`（`0x7016`） |
+| `vlim` | `float` | 速度限制（rad/s）→ 写 `limit_spd`（`0x7017`） |
+
+**返回：** `None`
+
+**抛出：** `CallError` 失败时
+
+<Note>
+PP 与 CSP 都把位置目标写入 `loc_ref`（`0x7016`），但速度/加速度寄存器不同：PP 写 `vel_max`（`0x7024`）与 `acc_set`（`0x7025`），CSP 写 `limit_spd`（`0x7017`）。模式也不同：PP 用 `run_mode=1`，CSP 用 `run_mode=5`。
 </Note>
 
 ---

@@ -1,0 +1,44 @@
+---
+title: "ABI Metadata & Capability Discovery"
+---
+
+# ABI Metadata & Capability Discovery
+
+<mintly-toc>
+
+The ABI exposes metadata entrypoints so tools, gateways, and language bindings
+can discover the loaded ABI version and supported transports/vendors/features
+at runtime.
+
+</mintly-toc>
+
+## Entry Points
+
+| Layer | Version | Capabilities |
+|---|---|---|
+| C ABI | `motor_abi_version()` | `motor_abi_capabilities_json()` |
+| Python | `motorbridge.abi_version()` | `motorbridge.abi_capabilities()` |
+| C++ | `motorbridge::abi_version()` | `motorbridge::abi_capabilities_json()` |
+
+## Python Example
+
+```python
+import motorbridge
+
+print(motorbridge.abi_version())
+caps = motorbridge.abi_capabilities()
+# caps exposes supported transports, vendors, modes, and ops
+```
+
+## Use Cases
+
+- Gateways (e.g. `ws_gateway`) report `gateway_version` and capability flags
+  via the `{"op":"capabilities"}` operation.
+- Language bindings and tools detect transport/vendor/mode support without
+  hard-coding matrices.
+
+## See Also
+
+- [ABI Guide](/source/project/abi)
+- [API: Controller](/api/controller)
+- [WebSocket Gateway](/source/integrations/ws-gateway/overview)

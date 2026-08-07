@@ -1,0 +1,37 @@
+---
+title: "MotorBridge 0.4.6 发布测试说明"
+---
+
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.4.6 发布测试说明
+
+日期：2026-06-12
+
+## 概述
+
+新增 Damiao `4340_v20` 型号别名、WebSocket query token 鉴权，修复状态轮询中的重复电机注册。
+
+## 版本对齐
+
+| 组件 | 版本 |
+|---|---|
+| Git 发布标签 | `v0.4.6` |
+| Rust workspace crates | `0.4.6` |
+| Python 包 | `0.4.6` |
+| C++ 包元数据 | `0.4.6` |
+
+## 主要变化
+
+### 修复
+
+- `damiao_state_many` 轮询时复用已有 Damiao 电机句柄，避免重复浏览器遥测因重复电机注册失败。
+- 允许浏览器 `ws_gateway` 客户端在 WebSocket URL query 中以 `?motorbridge_ws_token=...` 传入 `MOTORBRIDGE_WS_TOKEN`，同时保留 header 鉴权与非回环 token 要求。
+
+### 新增
+
+- Damiao `4340_v20` 别名，显示名 `4340X`，用于 v2.0 硬件版本。
+
+## 相关
+
+- [WebSocket 网关](/zh/source/integrations/ws-gateway/overview)

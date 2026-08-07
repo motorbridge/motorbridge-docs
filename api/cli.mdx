@@ -75,12 +75,12 @@ motorbridge-cli run [OPTIONS]
 | `--transport` | `auto` | Transport: auto, socketcan, socketcanfd, dm-serial, dm-device |
 | `--serial-port` | `/dev/ttyACM0` | Serial port (for dm-serial transport) |
 | `--serial-baud` | `921600` | Serial baud rate |
-| `--dm-device-type` | `usb2canfd-dual` | DM_Device adapter: usb2canfd, usb2canfd-dual, linkx4c |
-| `--dm-channel` | `0` | DM_Device SDK channel: usb2canfd=0, usb2canfd-dual=0/1, linkx4c=0/1/2/3 |
+| `--dm-device-type` | — | DM_Device adapter type (for dm-device transport): usb2canfd, usb2canfd-dual, linkx4c |
+| `--dm-channel` | — | DM_Device channel. usb2canfd: 0; usb2canfd-dual: 0/1; linkx4c: 0..3. Omit to scan all channels. |
 | `--model` | `4340` | Motor model string |
 | `--motor-id` | `0x01` | Motor CAN ID (hex supported) |
 | `--feedback-id` | `0x11` | Feedback CAN ID (hex supported) |
-| `--mode` | `mit` | Control mode: enable, disable, mit, pos-vel, vel, force-pos, ping, zero, set-zero, save, zero-by-offset, read-param, write-param |
+| `--mode` | `mit` | Control mode: enable, disable, mit, pos-vel, pos-vel-pp, pos-vel-csp, vel, force-pos, ping, zero, set-zero, firmware-version, save, zero-by-offset, read-param, write-param |
 | `--loop` | `100` | Number of control iterations |
 | `--dt-ms` | `20` | Control period in milliseconds |
 | `--ensure-mode` | `1` | Whether to ensure mode before control |
@@ -113,7 +113,7 @@ motorbridge-cli run [OPTIONS]
 
 - `mit`: `--pos/--vel/--kp/--kd/--tau` are effective.
 - `pos-vel`: effective args are `--pos/--vlim`; for RobStride, Python CLI follows the same native register path as the WS gateway (`limit_spd` `0x7017`, `loc_kp` `0x701E`, `loc_ref` `0x7016`). Use `--loop 1` for one target write; `--vel/--kd/--tau` are ignored by design.
-- `zero` / `set-zero`: currently RobStride-only; must pass `--zero-exp 1` to actually send zero command sequence. MotorBridge writes `zero_sta=1` internally for the RobStride zero flow.
+- `zero` / `set-zero`: currently RobStride-only; must pass `--zero-exp 1` to actually send zero command sequence. MotorBridge writes `zero_sta=1` for the RobStride zero flow.
 - `save`: currently RobStride-only; sends save-parameters and waits for the RobStride status ACK.
 - `zero-by-offset`: currently RobStride-only and intentionally disabled; it prints a warning and sends no calibration frames.
 - `read-param` / `write-param`: currently RobStride-only in `run`; use `--param-id`, `--param-type`, `--param-value`.
@@ -197,9 +197,6 @@ motorbridge-cli run \
     --mode pos-vel \
     --pos 1.5 \
     --vlim 1.0 \
-    --loc-kp 5.0 \
-    --loop 1 \
-    --dt-ms 20
     --loc-kp 5.0 \
     --loop 1 \
     --dt-ms 20
@@ -515,7 +512,7 @@ motorbridge-cli id-set \
 command=id-set transport=auto channel=can0 model=4340 old_motor_id=0x1 old_feedback_id=0x11 new_motor_id=0x5 new_feedback_id=0x15
 write rid=7 (MST_ID) <= 0x15
 write rid=8 (ESC_ID) <= 0x5
-store_parameters sent
+store_parameters sent (via new id)
 verify rid=8 (ESC_ID): 0x5
 verify rid=7 (MST_ID): 0x15
 verify ok

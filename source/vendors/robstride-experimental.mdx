@@ -1,0 +1,50 @@
+---
+title: "Experimental RobStride Protocol Paths"
+---
+
+# Experimental RobStride Protocol Paths
+
+<mintly-toc>
+
+RobStride has three protocol paths. Besides the default private extended-frame
+path, MotorBridge v0.4.5 introduced two experimental vendor paths:
+`robstride_cia402` (CANopen/CiA402) and `robstride_mit` (MIT).
+
+</mintly-toc>
+
+## Path Overview
+
+| Vendor string | Protocol | `F_CMD` | Status |
+|---|---|---|---|
+| `robstride` (default) | RobStride extended CAN | private | Production |
+| `robstride_cia402` | CANopen / CiA402 | `1` | Experimental |
+| `robstride_mit` | RobStride MIT | `2` | Experimental |
+
+Both experimental paths expose core CLI entry points and documentation, but
+remain incomplete for production use.
+
+## What Is Still Pending
+
+- Real-device validation matrices
+- High-rate / control ergonomics
+- EDS / PDO / SYNC coverage
+- Generic `dm-device` transport wiring
+
+<Warning>
+Do not use `robstride_cia402` or `robstride_mit` in production control loops.
+Behavior, limits, and ACK handling may change without notice. Prefer the
+default `robstride` vendor path until these paths are validated.
+</Warning>
+
+## CLI Surface
+
+The experimental paths expose the same core CLI entry points (scan, enable,
+disable, mode switch) so commissioning workflows can be exercised against a
+real device. Runtime parameter read/write still uses the common section 4
+table (`0x7005..0x702E`) — see
+[RobStride Parameter Tables](/reference/robstride-parameter-tables).
+
+## See Also
+
+- [Vendor Capability Matrix](/reference/vendor-capability-matrix)
+- [RobStride Parameter Tables](/reference/robstride-parameter-tables)

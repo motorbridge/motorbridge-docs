@@ -1,0 +1,40 @@
+---
+title: "MotorBridge 0.3.7 发布测试说明"
+---
+
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.3.7 发布测试说明
+
+日期：2026-05-21
+
+## 概述
+
+澄清 RobStride 状态查询语义：`request_feedback()` 对 RobStride 改为非阻塞 no-op，`request_feedback() -> get_state()` 不再假装刷新状态。
+
+## 版本对齐
+
+| 组件 | 版本 |
+|---|---|
+| Git 发布标签 | `v0.3.7` |
+| Rust workspace crates | `0.3.7` |
+| Python 包 | `0.3.7` |
+| C++ 包元数据 | `0.3.7` |
+
+## 主要变化
+
+### 修复
+
+- 统一 `request_feedback()` ABI 调用对 RobStride 改为非阻塞 no-op，而非阻塞式 `ping`。
+- 避免 RobStride 状态语义误导：`ping` 应答不合成 `MotorState`，因此 `request_feedback() -> get_state()` 无法刷新状态时不再假装刷新。
+- 文档说明正确的 RobStride 状态查询方式：`robstride_ping()` 用于连通性检查、主动上报用于流式状态、typed 参数读取用于新鲜位置/速度。
+
+### 新增
+
+- 单 controller RobStride 探测行为的 Python 扫描回归覆盖。
+- 可选的 `MOTORBRIDGE_WS_DEBUG=1` 网关 TCP accept 与 WebSocket 握手诊断日志。
+- WebSocket 网关 `capabilities` 操作，使 MotorBridge Studio 可发现批量扫描能力。
+
+## 相关
+
+- [变更日志](/zh/source/repository/overview)

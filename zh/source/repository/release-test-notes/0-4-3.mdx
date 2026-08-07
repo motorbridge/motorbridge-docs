@@ -1,0 +1,54 @@
+---
+title: "MotorBridge 0.4.3 发布测试说明"
+---
+
+<Note>Source: `CHANGELOG.md` + `docs: dm-device runtime` commits</Note>
+
+# MotorBridge 0.4.3 发布测试说明
+
+日期：2026-06-03
+
+## 概述
+
+引入基于达妙 DM_Device SDK（`USB2CANFD`、`USB2CANFD_DUAL`、`LINKX4C`）的 Damiao `dm-device` 传输。v0.3 线以来最大的传输扩展。
+
+## 版本对齐
+
+| 组件 | 版本 |
+|---|---|
+| Git 发布标签 | `v0.4.3` |
+| Rust workspace crates | `0.4.3` |
+| Python 包 | `0.4.3` |
+| C++ 包元数据 | `0.4.3` |
+
+## 主要变化
+
+### 新增
+
+- Damiao `dm-device` 传输，基于达妙 DM_Device SDK（`USB2CANFD`、`USB2CANFD_DUAL`、`LINKX4C`）。适配器须为 USB 模式；仅达妙协议。
+- `third_party/dm_device` 下内嵌 DM_Device SDK 运行时（Linux/macOS/Windows 库）。
+- `motor_core` 新增 `DmDeviceBus` 与暴露稳定 C ABI 的 C++ SDK shim。
+- Rust CLI flag `--transport dm-device`、`--dm-device-type`、`--dm-channel`。`usb2canfd` 用 `0`；`usb2canfd-dual` 用 `0`/`1`；`linkx4c` 用 `0..3`。
+- ABI 构造器 `motor_controller_new_dm_device(...)`。
+- Python `Controller.from_dm_device(...)` 与 Python CLI `--transport dm-device`。
+- Python DM_Device 运行时解析器与 `motorbridge-install-dm-device` helper。wheel 不内嵌厂商运行时；解析器打印所需文件、GitHub 下载 URL、缓存/源码树路径与平台 ABI 要求。
+- WebSocket 网关 Damiao 的 `dm-device` 支持，含 `dm_device_type` 与 `dm_channel` target 字段。
+
+### 修复
+
+- 统一 Rust CLI、Python CLI 与 WebSocket 网关的 Damiao `dm-device` 扫描使用稳定反馈请求路径。
+- 更新 `dm-device` 扫描语义：省略 `--dm-channel` / `dm_channel` 扫描所选适配器所有通道；指定通道则限定单物理通道。
+- Python wheel 打包默认不内嵌 `libdm_device.so/.dylib/.dll`，规避 Linux manylinux `auditwheel` 失败。
+- WebSocket Damiao 寄存器写入新增 readback 校验。
+- 软化 Damiao WebSocket 模式/寄存器确认超时。
+- 安装匹配的 C++ 交叉编译器，修复 Linux aarch64 CI 构建。
+- Windows DM_Device 运行时仅限 x86_64。
+
+### 已验证
+
+- 文档记录运行时 ABI 要求（Linux x86_64/aarch64）。
+- 在匹配 DM_Device 运行时可用的前提下，验证了 Linux x86_64 上 USB2CANFD_DUAL 通道 0/1 与 LINKX4C 通道 `0..3` 扫描路径。
+
+## 相关
+
+- [DM-Device 传输](/zh/source/transports/dm-device)

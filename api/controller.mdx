@@ -103,6 +103,54 @@ with Controller.from_dm_serial("/dev/ttyACM0", 921600) as ctrl:
 
 ---
 
+### `Controller.from_dm_device(dm_device_type, dm_channel=None)` (classmethod)
+
+Create a controller using the Damiao DM_Device SDK transport (`USB2CANFD`,
+`USB2CANFD_DUAL`, `LINKX4C`). The adapter must be in USB mode; this transport
+is currently Damiao-only.
+
+**Parameters:**
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| `dm_device_type` | `str` | — | `usb2canfd`, `usb2canfd-dual`, or `linkx4c` |
+| `dm_channel` | `int \| None` | `None` | Channel index. `usb2canfd`: `0`; `usb2canfd-dual`: `0`/`1`; `linkx4c`: `0..3`. `None` scans every channel for the selected adapter. |
+
+**Returns:** `Controller` instance
+
+**Raises:** `CallError` if the DM_Device runtime is missing or the adapter cannot be opened. When the runtime is absent, MotorBridge prints the required runtime file, its GitHub download URL, and platform ABI requirements.
+
+**Example:**
+
+```python
+from motorbridge import Controller
+
+with Controller.from_dm_device("usb2canfd", dm_channel=0) as ctrl:
+    motor = ctrl.add_damiao_motor(0x01, 0x11, "4340P")
+```
+
+<Note>
+Python wheels do not embed the vendor runtime. Install it on demand with `motorbridge-install-dm-device`. Windows runtime selection is restricted to x86_64; long-running processes reuse the already-open adapter.
+</Note>
+
+---
+
+### ABI Metadata Helpers
+
+Module-level helpers discover the loaded ABI version and capabilities:
+
+```python
+import motorbridge
+
+motorbridge.abi_version()         # -> version string
+motorbridge.abi_capabilities()   # -> capability dict
+```
+
+These mirror the C ABI `motor_abi_version()` / `motor_abi_capabilities_json()`
+and the C++ `motorbridge::abi_version()` / `motorbridge::abi_capabilities_json()`.
+
+---
+
 ## Lifecycle Methods
 
 ### `close()`
@@ -227,6 +275,11 @@ Register a Damiao motor and return its handle.
 | `motor_id` | `int` | Command CAN ID (typically 0x01-0x20) |
 | `feedback_id` | `int` | Feedback CAN ID (typically motor_id + 0x10) |
 | `model` | `str` | Motor model: "4310", "4340", "4340P", "6001", etc. |
+
+<Note>
+Damiao also accepts the `4340_v20` alias (displayed as `4340X`) for the v2.0
+hardware revision.
+</Note>
 
 **Returns:** [`Motor`](api/motor) instance
 

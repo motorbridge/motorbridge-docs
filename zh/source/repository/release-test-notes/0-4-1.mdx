@@ -1,0 +1,41 @@
+---
+title: "MotorBridge 0.4.1 发布测试说明"
+---
+
+<Note>Source: `release_test_notes/0.4.1.md`</Note>
+
+# MotorBridge 0.4.1 发布测试说明
+
+日期：2026-06-02
+
+## 概述
+
+将公共 ABI、Python 绑定、C++ 绑定与文档 API 接口面对齐到 0.4.1。新增 ABI 元数据发现，完成 C++ wrapper 对 Python RobStride helper 的 parity。
+
+## 版本对齐
+
+| 组件 | 版本 |
+|---|---|
+| Git 发布标签 | `v0.4.1` |
+| Rust workspace crates | `0.4.1` |
+| Python 包 | `0.4.1` |
+| C++ 包元数据 | `0.4.1` |
+
+## 主要变化
+
+### 新增
+
+- C ABI 元数据函数 `motor_abi_version()` 与 `motor_abi_capabilities_json()`。
+- Python helper `motorbridge.abi_version()` 与 `motorbridge.abi_capabilities()`。
+- C++ helper `motorbridge::abi_version()` 与 `motorbridge::abi_capabilities_json()`。
+- `bindings/api_surface.json` 作为权威绑定/API 接口面清单。
+- 绑定 parity 元数据的 API 接口面回归覆盖。
+
+### 变更
+
+- 完成 C++ wrapper 与 Python 的 RobStride helper parity：`robstride_ping_host_id`、`robstride_get_param_f32_host_id`、`robstride_get_fault_report`、`robstride_set_active_report`。
+- 新增 C++ RobStride ID 范围校验，与 Python 行为一致。
+
+## 相关
+
+- [ABI 元数据](/zh/api/abi-metadata)

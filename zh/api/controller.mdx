@@ -105,6 +105,53 @@ with Controller.from_dm_serial("/dev/ttyACM0", 921600) as ctrl:
 
 ---
 
+### `Controller.from_dm_device(dm_device_type, dm_channel=None)`（类方法）
+
+使用达妙 DM_Device SDK 传输（`USB2CANFD`、`USB2CANFD_DUAL`、`LINKX4C`）创建控制器。
+适配器须为 USB 模式；该传输目前仅用于达妙电机。
+
+**参数：**
+
+| 名称 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `dm_device_type` | `str` | — | `usb2canfd`、`usb2canfd-dual` 或 `linkx4c` |
+| `dm_channel` | `int \| None` | `None` | 通道号。`usb2canfd`: `0`；`usb2canfd-dual`: `0`/`1`；`linkx4c`: `0..3`。`None` 扫描所选适配器的所有通道。 |
+
+**返回：** `Controller` 实例
+
+**抛出：** `CallError`，当 DM_Device 运行时缺失或适配器无法打开时。运行时缺失时，MotorBridge 会打印所需运行时文件、其 GitHub 下载 URL 与平台 ABI 要求。
+
+**示例：**
+
+```python
+from motorbridge import Controller
+
+with Controller.from_dm_device("usb2canfd", dm_channel=0) as ctrl:
+    motor = ctrl.add_damiao_motor(0x01, 0x11, "4340P")
+```
+
+<Note>
+Python wheel 不内嵌厂商运行时。请用 `motorbridge-install-dm-device` 按需安装。Windows 运行时仅限 x86_64；长时间运行的进程会复用已打开的适配器。
+</Note>
+
+---
+
+### ABI 元数据 helper
+
+模块级 helper 用于发现当前加载的 ABI 版本与能力：
+
+```python
+import motorbridge
+
+motorbridge.abi_version()         # -> 版本字符串
+motorbridge.abi_capabilities()    # -> 能力字典
+```
+
+它们与 C ABI 的 `motor_abi_version()` / `motor_abi_capabilities_json()` 以及 C++ 的
+`motorbridge::abi_version()` / `motorbridge::abi_capabilities_json()` 镜像对应。
+
+---
+
 ## 生命周期方法
 
 ### `close()`
@@ -201,6 +248,10 @@ with Controller("can0") as ctrl:
 | `motor_id` | `int` | 命令 CAN ID（通常为 0x01-0x20） |
 | `feedback_id` | `int` | 反馈 CAN ID（通常为 motor_id + 0x10） |
 | `model` | `str` | 电机型号："4310"、"4340"、"4340P"、"6001" 等 |
+
+<Note>
+达妙也接受 `4340_v20` 别名（显示为 `4340X`），用于 v2.0 硬件版本。
+</Note>
 
 **返回：** [`Motor`](api/motor) 实例
 

@@ -2,72 +2,47 @@
 title: "MotorBridge 0.4.1 Release Test Note"
 ---
 
+<Note>Source: `release_test_notes/0.4.1.md`</Note>
+
+# MotorBridge 0.4.1 Release Test Note
+
 Date: 2026-06-02
 
 ## Summary
 
-MotorBridge 0.4.1 aligns the public ABI, Python binding, C++ binding, and
-documentation API surface. It adds ABI metadata discovery, completes C++
-RobStride wrapper parity with Python, and introduces `bindings/api_surface.json`
-as the canonical API surface checklist.
+Aligns the public ABI, Python binding, C++ binding, and documentation API
+surface at version 0.4.1. Adds ABI metadata discovery and completes C++ wrapper
+parity with Python for RobStride helper methods.
 
 ## Version Alignment
 
 | Component | Version |
 |---|---|
-| Git release tag when published | `v0.4.1` |
+| Git release tag | `v0.4.1` |
 | Rust workspace crates | `0.4.1` |
 | Python package | `0.4.1` |
 | C++ package metadata | `0.4.1` |
 
 ## Key Changes
 
-- Added C ABI metadata functions:
-  - `motor_abi_version()`
-  - `motor_abi_capabilities_json()`
-- Added Python metadata helpers:
-  - `motorbridge.abi_version()`
-  - `motorbridge.abi_capabilities()`
-- Added C++ metadata helpers:
-  - `motorbridge::abi_version()`
-  - `motorbridge::abi_capabilities_json()`
-- Completed C++ RobStride wrapper parity for:
-  - `robstride_ping_host_id`
-  - `robstride_get_param_f32_host_id`
-  - `robstride_get_fault_report`
-  - `robstride_set_active_report`
-- Added `bindings/api_surface.json` and API surface regression coverage.
+### Added
 
-## Required Checks
+- C ABI metadata functions `motor_abi_version()` and
+  `motor_abi_capabilities_json()`.
+- Python metadata helpers `motorbridge.abi_version()` and
+  `motorbridge.abi_capabilities()`.
+- C++ metadata helpers `motorbridge::abi_version()` and
+  `motorbridge::abi_capabilities_json()`.
+- `bindings/api_surface.json` as the canonical binding/API surface list.
+- API surface regression coverage for the binding parity metadata.
 
-```bash
-cargo fmt --all -- --check
-cargo check -p motor_abi
-cargo build -p motor_abi
-PYTHONPATH=bindings/python/src python3 -m compileall bindings/python/src/motorbridge
-```
+### Changed
 
-Python API surface and metadata smoke:
+- Completed C++ wrapper parity with Python for RobStride helper methods:
+  `robstride_ping_host_id`, `robstride_get_param_f32_host_id`,
+  `robstride_get_fault_report`, and `robstride_set_active_report`.
+- Added C++ RobStride ID range validation to match Python binding behavior.
 
-```bash
-PYTHONPATH=bindings/python/src python3 - <<'PY'
-import motorbridge
+## See Also
 
-assert motorbridge.get_version() == "0.4.1"
-assert motorbridge.abi_version() == "0.4.1"
-caps = motorbridge.abi_capabilities()
-assert caps["abi"]["version"] == "0.4.1"
-assert "dm-serial" in caps["transports"]
-assert "robstride" in caps["vendors"]
-print("abi metadata ok")
-PY
-```
-
-## Expected Version Smoke
-
-```text
-motor_cli 0.4.1
-ws_gateway 0.4.1
-motorbridge 0.4.1
-motor_abi 0.4.1
-```
+- [ABI Metadata](/api/abi-metadata)

@@ -2,6 +2,10 @@
 title: "Python Binding 总览"
 ---
 
+<Note>Source: `bindings/python/README.zh-CN.md`</Note>
+
+# motorbridge Python SDK
+
 {/* channel-compat-note */}
 ## 通道兼容说明（PCAN + slcan + CAN-FD + Damiao 串口桥）
 
@@ -26,7 +30,7 @@ title: "Python Binding 总览"
    作用：Python binding 总览（安装、API 范围、常用命令）。
 2. [examples/READMEzh_cn.md](/zh/source/python/examples/overview)（中文） / [examples/README.md](/source/python/examples/overview)（英文）
    作用：所有 Python 示例的入口说明（从最简单到高级示例）。
-2.5. [`../motorbridge-docs`](https://github.com/tianrking/motorbridge/tree/main/../motorbridge-docs)
+2.5. [`../motorbridge-docs`](https://github.com/motorbridge/motorbridge/tree/main/../motorbridge-docs)
    作用：正式 Mintlify 文档站入口（教程 + API 手册风格）。
 3. [get_started/README.zh-CN.md](/zh/source/python/get-started/overview) / [get_started/README.md](/source/python/get-started/overview)
    作用：pip 安装用户的快速上手路径（安装 -> 扫描 -> 运行）。
@@ -43,12 +47,8 @@ title: "Python Binding 总览"
 
 ## 范围
 
-- 当前目标包版本：`0.4.1`。
+- 当前目标包版本：`0.5.0`。
 - 版本可通过 `motorbridge.__version__`、`motorbridge.get_version()` 和 `motorbridge-cli -v` 获取。
-- ABI 元数据 helper：
-  - `motorbridge.abi_version()` 返回当前加载的 ABI 库版本。
-  - `motorbridge.abi_capabilities()` 返回当前加载 ABI 的能力 JSON，并转换为 Python `dict`。
-- `0.4.1` 新增 ABI 版本/能力发现，并通过 `bindings/api_surface.json` 跟踪 Python/C++ binding parity。
 - 高层 API: `Controller`、`Motor`、`Mode`
 - CLI: `motorbridge-cli`
 - 网关启动命令（pip 安装后进入 PATH）：
@@ -230,7 +230,7 @@ motorbridge-cli run \
   --mode ping
 ```
 
-Python CLI 和 SDK 调用都请使用真实 RobStride 型号（`rs-00` 到 `rs-06`）。系列内控制方法一致；v0.4.1 参数读写继续使用第 4 章通用运行表。
+Python CLI 和 SDK 调用都请使用真实 RobStride 型号（`rs-00` 到 `rs-06`）。系列内控制方法一致；v0.5.0 参数读写使用第 4 章通用运行表。
 
 RobStride MIT 与 POS_VEL 快速验证：
 

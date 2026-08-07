@@ -1,0 +1,36 @@
+---
+title: "MotorBridge 0.4.8 发布测试说明"
+---
+
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.4.8 发布测试说明
+
+日期：2026-06-24
+
+## 概述
+
+新增 RobStride 电机状态解析/展示，并将 `ws_gateway` 单电机命令收敛到显式 target。
+
+## 版本对齐
+
+| 组件 | 版本 |
+|---|---|
+| Git 发布标签 | `v0.4.8` |
+| Rust workspace crates | `0.4.8` |
+| Python 包 | `0.4.8` |
+| C++ 包元数据 | `0.4.8` |
+
+## 主要变化
+
+### 新增
+
+- RobStride 电机状态解析与展示，CLI 等界面可暴露更丰富的故障与状态细节。
+
+### 修复
+
+- `ws_gateway` 单电机命令收敛到显式请求 target，单电机操作不再向多个已发现电机扩散。
+
+## 相关
+
+- [WebSocket 网关](/zh/source/integrations/ws-gateway/overview)

@@ -1,0 +1,40 @@
+---
+title: "MotorBridge 0.4.7 Release Test Note"
+---
+
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.4.7 Release Test Note
+
+Date: 2026-06-16
+
+## Summary
+
+Hardens Damiao mode switching and parameter persistence, and relaxes the
+`dm-serial` timeout budget.
+
+## Version Alignment
+
+| Component | Version |
+|---|---|
+| Git release tag | `v0.4.7` |
+| Rust workspace crates | `0.4.7` |
+| Python package | `0.4.7` |
+| C++ package metadata | `0.4.7` |
+
+## Key Changes
+
+### Fixed
+
+- Hardened Damiao `ensure_control_mode()` so mode switching stays within one
+  shared timeout budget instead of serially reusing the full timeout across
+  every internal step. Reduces `ensure_mode` timeouts on slower joints/adapters.
+- Improved Damiao mode-switch preparation and verification by reusing the hold
+  position read, validating register writes through write ACKs, and making
+  parameter persistence behave more reliably on real hardware.
+- Raised the `dm-serial` transport timeout from `1 ms` to `10 ms` to reduce
+  cross-platform serial write failures under tighter adapter/driver timing.
+
+## See Also
+
+- [Changelog](/source/repository/changelog)

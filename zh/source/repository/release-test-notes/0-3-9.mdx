@@ -1,0 +1,34 @@
+---
+title: "MotorBridge 0.3.9 发布测试说明"
+---
+
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.3.9 发布测试说明
+
+日期：2026-05-26
+
+## 概述
+
+落实 v0.3.7 引入的 RobStride 状态语义澄清：`ping` 应答不合成 `MotorState`。
+
+## 版本对齐
+
+| 组件 | 版本 |
+|---|---|
+| Git 发布标签 | `v0.3.9` |
+| Rust workspace crates | `0.3.9` |
+| Python 包 | `0.3.9` |
+| C++ 包元数据 | `0.3.9` |
+
+## 主要变化
+
+### 修复
+
+- 统一 `request_feedback()` ABI 调用对 RobStride 改为非阻塞 no-op。
+- 避免 RobStride 状态语义误导：`ping` 应答不合成 `MotorState`。
+- 文档说明正确的 RobStride 状态查询方式。
+
+## 相关
+
+- [变更日志](/zh/source/repository/overview)

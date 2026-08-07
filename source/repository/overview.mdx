@@ -4,9 +4,9 @@ title: "Repository Overview"
 
 [![Rust](https://img.shields.io/badge/Rust-2021-orange.svg)](https://www.rust-lang.org/)
 [![Python](https://img.shields.io/badge/Python-3.10--3.14-blue.svg)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/tianrking/motorbridge/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/motorbridge/motorbridge/blob/main/LICENSE)
 [![Platforms](https://img.shields.io/badge/Platforms-Linux%20%7C%20Windows%20%7C%20macOS-6f42c1.svg)](/source/repository/overview#release-and-installation-overview-full-matrix)
-[![GitHub Release](https://img.shields.io/github/v/release/tianrking/motorbridge)](https://github.com/tianrking/motorbridge/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/motorbridge/motorbridge)](https://github.com/motorbridge/motorbridge/releases)
 
 Unified CAN motor control stack with a vendor-agnostic Rust core, stable C ABI, and Python/C++ bindings.
 
@@ -14,8 +14,13 @@ Unified CAN motor control stack with a vendor-agnostic Rust core, stable C ABI, 
 
 ## Companion Repos
 
-- `motorbridge-studio`: https://github.com/tianrking/motorbridge-studio
-  Standalone web control UI built on top of `ws_gateway`.
+- `motorbridge-studio`: https://github.com/motorbridge/motorbridge-studio
+  Standalone web control UI built on top of `ws_gateway`. Current release: `v1.1.3` (2026-07-23). Split out of `tools/factory_calib_ui_ws`.
+
+<Note>
+`motorbridge-studio` evolves independently of this docs site. For its changelog,
+capabilities, and release notes, see the studio repository directly.
+</Note>
 
 ## Transport Legend
 
@@ -123,19 +128,19 @@ flowchart TB
   FB2 --> STATE
 ```
 
-- [`motor_core`](https://github.com/tianrking/motorbridge/tree/main/motor_core): vendor-agnostic controller, routing, CAN bus layer (Linux SocketCAN / Windows experimental PCAN)
-- [`motor_vendors/damiao`](https://github.com/tianrking/motorbridge/tree/main/motor_vendors/damiao): Damiao protocol / models / registers
-- [`motor_vendors/hexfellow`](https://github.com/tianrking/motorbridge/tree/main/motor_vendors/hexfellow): Hexfellow CANopen-over-CAN-FD implementation
+- [`motor_core`](https://github.com/motorbridge/motorbridge/tree/main/motor_core): vendor-agnostic controller, routing, CAN bus layer (Linux SocketCAN / Windows experimental PCAN)
+- [`motor_vendors/damiao`](https://github.com/motorbridge/motorbridge/tree/main/motor_vendors/damiao): Damiao protocol / models / registers
+- [`motor_vendors/hexfellow`](https://github.com/motorbridge/motorbridge/tree/main/motor_vendors/hexfellow): Hexfellow CANopen-over-CAN-FD implementation
 - [`motor_vendors/hightorque`](/source/vendors/hightorque/overview): HighTorque native ht_can protocol implementation
-- [`motor_vendors/robstride`](https://github.com/tianrking/motorbridge/tree/main/motor_vendors/robstride): RobStride extended CAN protocol / models / parameters
-- [`motor_vendors/myactuator`](https://github.com/tianrking/motorbridge/tree/main/motor_vendors/myactuator): MyActuator CAN protocol implementation
+- [`motor_vendors/robstride`](https://github.com/motorbridge/motorbridge/tree/main/motor_vendors/robstride): RobStride extended CAN protocol / models / parameters
+- [`motor_vendors/myactuator`](https://github.com/motorbridge/motorbridge/tree/main/motor_vendors/myactuator): MyActuator CAN protocol implementation
 - [`motor_cli`](/source/rust-cli/overview): unified Rust CLI
   - full parameters (English): [`motor_cli/README.md`](/source/rust-cli/overview)
   - full parameters (Chinese): [`motor_cli/README.zh-CN.md`](/zh/source/rust-cli/overview)
   - Damiao command/register guide: [`motor_cli/DAMIAO_API.md`](/source/rust-cli/damiao-api), [`motor_cli/DAMIAO_API.zh-CN.md`](/zh/source/rust-cli/damiao-api)
   - RobStride command/parameter guide: [`motor_cli/ROBSTRIDE_API.md`](/source/rust-cli/robstride-api), [`motor_cli/ROBSTRIDE_API.zh-CN.md`](/zh/source/rust-cli/robstride-api)
   - MyActuator command/mode guide: [`motor_cli/MYACTUATOR_API.md`](/source/rust-cli/myactuator-api), [`motor_cli/MYACTUATOR_API.zh-CN.md`](/zh/source/rust-cli/myactuator-api)
-- [`motor_abi`](https://github.com/tianrking/motorbridge/tree/main/motor_abi): stable C ABI
+- [`motor_abi`](https://github.com/motorbridge/motorbridge/tree/main/motor_abi): stable C ABI
 - [`bindings/python`](/source/python/overview): Python SDK + `motorbridge-cli`
 - [`bindings/cpp`](/source/cpp/overview): C++ RAII wrapper
 - `motorbridge-studio`: standalone web control UI repository (split out of `tools/factory_calib_ui_ws`)
@@ -278,7 +283,7 @@ On macOS, `PCANBasic.dll` is not used.
 - `motorbridge` source built on macOS.
 - Bundled archive in this repo: `third_party/pcan/macos/macOS_Library_for_PCANUSB_v0.13.tar.gz`.
 - Or download directly from GitHub:
-  - [https://github.com/tianrking/motorbridge/blob/main/third_party/pcan/macos/macOS_Library_for_PCANUSB_v0.13.tar.gz](https://github.com/tianrking/motorbridge/blob/main/third_party/pcan/macos/macOS_Library_for_PCANUSB_v0.13.tar.gz)
+  - [https://github.com/motorbridge/motorbridge/blob/main/third_party/pcan/macos/macOS_Library_for_PCANUSB_v0.13.tar.gz](https://github.com/motorbridge/motorbridge/blob/main/third_party/pcan/macos/macOS_Library_for_PCANUSB_v0.13.tar.gz)
 
 ### 2. Quick install from bundled archive (recommended)
 
@@ -305,7 +310,7 @@ If you want to download manually first:
 ```bash
 mkdir -p /tmp/motorbridge-pcan && cd /tmp/motorbridge-pcan
 curl -L -o macOS_Library_for_PCANUSB_v0.13.tar.gz \
-  https://raw.githubusercontent.com/tianrking/motorbridge/main/third_party/pcan/macos/macOS_Library_for_PCANUSB_v0.13.tar.gz
+  https://raw.githubusercontent.com/motorbridge/motorbridge/main/third_party/pcan/macos/macOS_Library_for_PCANUSB_v0.13.tar.gz
 ```
 
 Then install:

@@ -1,0 +1,53 @@
+---
+title: "MotorBridge 0.3.6 Release Test Note"
+---
+
+<Note>Source: `release_test_notes/0.3.6.md`</Note>
+
+# MotorBridge 0.3.6 Release Test Note
+
+Date: 2026-05-21
+
+## Summary
+
+RobStride scan reliability on Windows PCAN while keeping Linux SocketCAN behavior
+stable. Aligns the Python CLI and WebSocket gateway scan implementations around
+sequential, exact host/feedback ID probing.
+
+## Version Alignment
+
+| Component | Version |
+|---|---|
+| Git release tag | `v0.3.6` |
+| Rust workspace crates | `0.3.6` |
+| Python package | `0.3.6` |
+| C++ package metadata | `0.3.6` |
+
+## Key Changes
+
+### Fixed
+
+- Python CLI RobStride scan opens only one controller at a time, preventing
+  multiple PCAN receive workers from competing on the same Windows CAN channel.
+- Python CLI scan cleanup no longer calls `close_bus()` on unbound probe
+  controllers, removing the misleading `controller has no motor` scan footer.
+- WebSocket gateway RobStride scan now probes host/feedback IDs sequentially and
+  exactly with `ping_with_host_id()` / `get_parameter_with_host_id()`.
+- WebSocket gateway TCP accept now uses the standard listener before handing
+  sockets to Tokio/Tungstenite, fixing Windows loopback clients that connected
+  at TCP level but timed out during WebSocket handshake.
+- Already discovered motor IDs are skipped in later host-id passes.
+
+### Added
+
+- WebSocket gateway responds to `{"op":"capabilities"}` with `gateway_version`,
+  vendor support, and `batch_scan` / `robstride_exact_host_scan` flags.
+
+## Compatibility
+
+- Python binding public API and CLI entrypoints remain compatible.
+- C ABI symbol names and signatures remain stable.
+
+## See Also
+
+- [Changelog](/source/repository/changelog)

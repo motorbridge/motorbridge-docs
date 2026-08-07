@@ -88,6 +88,12 @@ motor.ensure_mode(Mode.POS_VEL, 1000)
 motor.send_pos_vel(pos=2.0, vlim=1.5)
 ```
 
+<Note>
+**RobStride PP / CSP：** RobStride 还提供 `robstride_send_pos_vel_pp`（Profile Position）
+与 `robstride_send_pos_vel_csp`（Cyclic Synchronous Position），遵循厂商手册 PP/CSP 序列。高速循环
+请使用预备 profile，每周期直接写 `loc_ref`，避免每个控制周期等待一次 `enable` ACK。
+</Note>
+
 ---
 
 #### `Mode.VEL`
@@ -229,6 +235,18 @@ if state is not None:
     # status_code 是规范的机器可读状态值
     print(state.status_code, state.pos, state.vel)
 ```
+
+<Note>
+**RobStride 状态语义：** 统一 `request_feedback()` ABI 调用对 RobStride
+为非阻塞 no-op；`ping` 应答不合成 `MotorState`，因此 `request_feedback() -> get_state()`
+无法刷新状态时不会假装刷新。请按目标选择正确的查询方式：
+- `robstride_ping()` 用于连通性检查，
+- 主动上报（`robstride_set_active_report`）用于流式状态，
+- typed 参数读取（`robstride_get_param_*`）用于新鲜位置/速度。
+
+**mode-aware 受控停止：** `handle_stop` 已加固，执行按模式区分的受控停止，
+而非裸 disable。
+</Note>
 
 ### 状态代码解释
 

@@ -2,18 +2,49 @@
 title: "MotorBridge 0.3.7 Release Test Note"
 ---
 
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.3.7 Release Test Note
+
 Date: 2026-05-21
 
-MotorBridge 0.3.7 fixes Windows RobStride scan reliability and adds gateway
-capability discovery for browser clients.
+## Summary
 
-Key checks:
+Clarifies RobStride state-query semantics: `request_feedback()` is now a
+non-blocking no-op for RobStride, so `request_feedback() -> get_state()` no
+longer appears to refresh state when it cannot.
 
-- Python CLI RobStride scans probe one host/feedback ID at a time on Windows
-  PCAN.
-- WebSocket gateway RobStride scans use requested `channel`, `model`, and
-  host IDs exactly.
-- Repeated gateway scans release any active RobStride session before probing.
-- `{"op":"capabilities"}` reports the supported vendor/mode/operation matrix.
-- Python, Rust workspace, and C++ package metadata are aligned to `0.3.7`.
+## Version Alignment
 
+| Component | Version |
+|---|---|
+| Git release tag | `v0.3.7` |
+| Rust workspace crates | `0.3.7` |
+| Python package | `0.3.7` |
+| C++ package metadata | `0.3.7` |
+
+## Key Changes
+
+### Fixed
+
+- Changed RobStride handling of the unified `request_feedback()` ABI call to a
+  non-blocking no-op instead of issuing a blocking `ping`.
+- Avoided misleading RobStride state semantics: `ping` replies do not
+  synthesize `MotorState`, so `request_feedback() -> get_state()` no longer
+  appears to refresh state when it cannot.
+- Documented the correct RobStride state-query choices: use
+  `robstride_ping()` for connectivity checks, active report for streaming
+  state, or typed parameter reads for fresh position/velocity values.
+
+### Added
+
+- Added Python scan regression coverage for the single-controller RobStride
+  probing behavior.
+- Added optional `MOTORBRIDGE_WS_DEBUG=1` connection logs for gateway TCP
+  accept and WebSocket handshake diagnostics.
+- Added the WebSocket gateway `capabilities` operation so MotorBridge Studio
+  can discover batch scan support.
+
+## See Also
+
+- [Changelog](/source/repository/changelog)

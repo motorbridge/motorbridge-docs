@@ -1,0 +1,68 @@
+---
+title: "MotorBridge 0.4.3 Release Test Note"
+---
+
+<Note>Source: `CHANGELOG.md` + `docs: dm-device runtime` commits</Note>
+
+# MotorBridge 0.4.3 Release Test Note
+
+Date: 2026-06-03
+
+## Summary
+
+Introduces the Damiao `dm-device` transport backed by the DaMiao DM_Device SDK
+(`USB2CANFD`, `USB2CANFD_DUAL`, `LINKX4C`). The largest transport addition
+since the v0.3 line.
+
+## Version Alignment
+
+| Component | Version |
+|---|---|
+| Git release tag | `v0.4.3` |
+| Rust workspace crates | `0.4.3` |
+| Python package | `0.4.3` |
+| C++ package metadata | `0.4.3` |
+
+## Key Changes
+
+### Added
+
+- Damiao `dm-device` transport backed by DaMiao DM_Device SDK (`USB2CANFD`,
+  `USB2CANFD_DUAL`, `LINKX4C`). Adapter must be in USB mode; Damiao protocol
+  only.
+- Vendored DM_Device SDK runtime under `third_party/dm_device` (Linux/macOS/Windows
+  libraries).
+- `DmDeviceBus` in `motor_core` and a C++ SDK shim exposing a stable C ABI.
+- Rust CLI flags `--transport dm-device`, `--dm-device-type`, `--dm-channel`.
+  `usb2canfd` uses `0`; `usb2canfd-dual` uses `0`/`1`; `linkx4c` uses `0..3`.
+- ABI constructor `motor_controller_new_dm_device(...)`.
+- Python `Controller.from_dm_device(...)` and Python CLI `--transport dm-device`.
+- Python DM_Device runtime resolver and `motorbridge-install-dm-device` helper.
+  Wheels do not embed the vendor runtime; the resolver prints the required file,
+  GitHub download URL, cache/source-tree paths, and platform ABI requirements.
+- WebSocket gateway `dm-device` support for Damiao, including `dm_device_type`
+  and `dm_channel` target fields.
+
+### Fixed
+
+- Aligned Damiao `dm-device` scans in Rust CLI, Python CLI, and WebSocket
+  gateway to use the stable feedback request path.
+- Updated `dm-device` scan semantics: omitting `--dm-channel` / `dm_channel`
+  scans every channel for the selected adapter; specifying a channel restricts
+  the scan to one physical channel.
+- Changed Python wheel packaging to omit `libdm_device.so/.dylib/.dll` by
+  default to avoid Linux manylinux `auditwheel` failures.
+- Added readback verification for WebSocket Damiao register writes.
+- Softened Damiao WebSocket mode/register confirmation timeouts.
+- Fixed Linux aarch64 CI builds via the matching C++ cross compiler.
+- Restricted Windows DM_Device runtime selection to x86_64.
+
+### Verified
+
+- Runtime ABI requirements documented (Linux x86_64/aarch64).
+- Verified USB2CANFD_DUAL channel 0/1 and LINKX4C channel `0..3` scan paths on
+  Linux x86_64 when the matching DM_Device runtime is available.
+
+## See Also
+
+- [DM-Device Transport](/source/transports/dm-device)

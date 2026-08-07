@@ -1,0 +1,39 @@
+---
+title: "MotorBridge 0.4.8 Release Test Note"
+---
+
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.4.8 Release Test Note
+
+Date: 2026-06-24
+
+## Summary
+
+Adds RobStride motor status parsing/display and scopes `ws_gateway` single-motor
+commands to the explicit target.
+
+## Version Alignment
+
+| Component | Version |
+|---|---|
+| Git release tag | `v0.4.8` |
+| Rust workspace crates | `0.4.8` |
+| Python package | `0.4.8` |
+| C++ package metadata | `0.4.8` |
+
+## Key Changes
+
+### Added
+
+- RobStride motor status parsing and display support so CLI and related surfaces
+  can expose richer fault and state details during bring-up.
+
+### Fixed
+
+- Scoped `ws_gateway` single-motor commands to the explicit requested target so
+  one-motor operations no longer fan out across multiple discovered motors.
+
+## See Also
+
+- [WebSocket Gateway](/source/integrations/ws-gateway/overview)

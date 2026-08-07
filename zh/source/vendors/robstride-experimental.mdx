@@ -1,0 +1,45 @@
+---
+title: "实验性 RobStride 协议路径"
+---
+
+# 实验性 RobStride 协议路径
+
+<mintly-toc>
+
+RobStride 有三条协议路径。除默认的私有扩展帧路径外，MotorBridge v0.4.5 引入了两个实验性厂商路径：
+`robstride_cia402`（CANopen/CiA402）与 `robstride_mit`（MIT）。
+
+</mintly-toc>
+
+## 路径概览
+
+| 厂商字符串 | 协议 | `F_CMD` | 状态 |
+|---|---|---|---|
+| `robstride`（默认） | RobStride 扩展 CAN | 私有 | 量产 |
+| `robstride_cia402` | CANopen / CiA402 | `1` | 实验性 |
+| `robstride_mit` | RobStride MIT | `2` | 实验性 |
+
+两条实验路径均暴露核心 CLI 入口与文档，但尚未达到量产可用。
+
+## 仍待补齐
+
+- 真机验证矩阵
+- 高速 / 控制人机工程
+- EDS / PDO / SYNC 覆盖
+- 通用 `dm-device` 传输接线
+
+<Warning>
+请勿在量产控制循环中使用 `robstride_cia402` 或 `robstride_mit`。其行为、限值与 ACK 处理
+可能随时变更。在这些路径完成验证前，请优先使用默认的 `robstride` 厂商路径。
+</Warning>
+
+## CLI 接口面
+
+实验路径暴露与默认路径相同的核心 CLI 入口（扫描、enable、disable、模式切换），便于
+在真机上演练现场调试流程。运行参数读写仍使用第 4 章通用表（`0x7005..0x702E`），详见
+[RobStride 参数表](/zh/reference/robstride-parameter-tables)。
+
+## 相关
+
+- [厂商能力矩阵](/zh/reference/vendor-capability-matrix)
+- [RobStride 参数表](/zh/reference/robstride-parameter-tables)

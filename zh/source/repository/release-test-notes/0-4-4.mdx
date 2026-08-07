@@ -1,0 +1,32 @@
+---
+title: "MotorBridge 0.4.4 发布测试说明"
+---
+
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.4.4 发布测试说明
+
+日期：2026-06-04
+
+## 概述
+
+加固 `dm-device` 传输：句柄复用、扫描语义、写 ACK 校验。
+
+## 版本对齐
+
+| 组件 | 版本 |
+|---|---|
+| Git 发布标签 | `v0.4.4` |
+| Rust workspace crates | `0.4.4` |
+| Python 包 | `0.4.4` |
+| C++ 包元数据 | `0.4.4` |
+
+## 主要变化
+
+### 修复
+
+- 修复长时间运行的 `dm-device` 进程重复打开问题：C++ shim 内复用已打开的 SDK 句柄，避免重复打开同一 USB 适配器。
+
+## 相关
+
+- [DM-Device 传输](/zh/source/transports/dm-device)

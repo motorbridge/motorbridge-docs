@@ -1,0 +1,41 @@
+---
+title: "MotorBridge 0.4.0 发布测试说明"
+---
+
+<Note>Source: `release_test_notes/0.4.0.md`</Note>
+
+# MotorBridge 0.4.0 发布测试说明
+
+日期：2026-06-02
+
+## 概述
+
+修复通过 WebSocket 网关的 Damiao `dm-serial` 整臂扫描与遥测（尤其 Windows）。新增 `damiao_state_many` 用于浏览器多关节遥测。
+
+## 版本对齐
+
+| 组件 | 版本 |
+|---|---|
+| Git 发布标签 | `v0.4.0` |
+| Rust workspace crates | `0.4.0` |
+| Python 包 | `0.4.0` |
+| C++ 包元数据 | `0.4.0` |
+
+## 主要变化
+
+### 新增
+
+- WebSocket 网关 `damiao_state_many`，通过 `dm-serial` 一次逻辑请求刷新所有已发现达妙关节。
+- 网关状态快照新增 Damiao 身份字段（`motor_id`、`feedback_id`、`model`），客户端可按关节合并整臂遥测。
+- Damiao 多状态操作的能力发现。
+
+### 修复
+
+- 修复 Windows Damiao `dm-serial` 整臂扫描：扫描探测复用串口前释放活跃 Damiao 会话并停止 state/param 流。
+- 修复陈旧状态读取：返回网关状态快照前以有界超时请求新鲜反馈。
+- 修复 `param_stream enabled=false`：关闭流不再打开或重开硬件会话。
+- 修复 RobStride 扫描/会话释放处理，保持 Windows PCAN 引入的扫描安全行为。
+
+## 相关
+
+- [WebSocket 网关](/zh/source/integrations/ws-gateway/overview)

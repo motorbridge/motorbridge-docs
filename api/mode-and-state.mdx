@@ -89,6 +89,14 @@ motor.send_pos_vel(
 )
 ```
 
+<Note>
+**RobStride PP / CSP:** RobStride also exposes `robstride_send_pos_vel_pp`
+(Profile Position) and `robstride_send_pos_vel_csp` (Cyclic Synchronous Position), which
+follow the vendor manual PP/CSP sequences. For high-rate loops, use a prepared
+profile and write `loc_ref` directly each cycle to avoid an `enable` ACK wait
+every control cycle.
+</Note>
+
 ---
 
 #### `Mode.VEL`
@@ -234,6 +242,20 @@ if state is not None:
     # status_code is the canonical machine-readable status value
     print(state.status_code, state.pos, state.vel)
 ```
+
+<Note>
+**RobStride state semantics:** the unified
+`request_feedback()` ABI call is a non-blocking no-op for RobStride; `ping`
+replies do not synthesize a `MotorState`, so `request_feedback() ->
+get_state()` will not appear to refresh state when it cannot. Use the correct
+query for your goal:
+- `robstride_ping()` for connectivity checks,
+- active report (`robstride_set_active_report`) for streaming state,
+- typed parameter reads (`robstride_get_param_*`) for fresh position/velocity.
+
+**Mode-aware controlled stop:** `handle_stop` is hardened and
+performs a mode-aware controlled stop instead of a bare disable.
+</Note>
 
 ### Status Code Interpretation
 

@@ -2,6 +2,8 @@
 title: 传输方式
 ---
 
+# 传输方式
+
 <mintly-toc>
 
 motorbridge SDK 支持多种传输层与电机通信。本指南解释每种传输选项及其使用场景。
@@ -17,7 +19,7 @@ SDK 提供四种传输构造函数：
 | `Controller(channel)` | SocketCAN | 标准 CAN 2.0，最常用 |
 | `Controller.from_socketcanfd(channel)` | CAN-FD | 高带宽，Hexfellow 电机 |
 | `Controller.from_dm_serial(port, baud)` | 串口 | 达妙串口桥适配器 |
-| `Controller.from_dm_device(device_type, channel)` | DM_Device SDK | 达妙 USB2CANFD / USB2CANFD_DUAL / LINKX4C 适配器 |
+| `Controller.from_dm_device(dm_device_type, dm_channel)` | DM_Device SDK | 达妙 USB2CANFD / USB2CANFD_DUAL / LINKX4C |
 
 ## SocketCAN（标准 CAN）
 
@@ -143,72 +145,6 @@ with Controller.from_dm_serial("/dev/ttyACM0", baud=921600) as ctrl:
 
 - 仅达妙
 
-## DM_Device SDK
-
-DaMiao DM_Device_SDK 用于控制 CAN/CAN FD 适配器硬件。在 motorbridge 中，
-该传输链路当前只和达妙电机协议组合使用，适配器需要处于 USB 模式。
-
-### 支持的适配器类型
-
-| 适配器 | SDK 枚举 | 通道数 | `dm_device_type` | `dm_channel` |
-|--------|----------|--------|------------------|--------------|
-| USB2CANFD | `USB2CANFD` | 1 | `usb2canfd` | `0` |
-| USB2CANFD_DUAL | `USB2CANFD_DUAL` | 2 | `usb2canfd-dual` | `0` / `1` |
-| LINKX4C | `LINKX4C` | 4 | `linkx4c` | `0` / `1` / `2` / `3` |
-
-### Python 用法
-
-```python
-from motorbridge import Controller
-
-# USB2CANFD_DUAL 通道 0
-with Controller.from_dm_device("usb2canfd-dual", "0") as ctrl:
-    motor = ctrl.add_damiao_motor(0x04, 0x14, "4310")
-
-# LINKX4C 通道 0
-with Controller.from_dm_device("linkx4c", "0") as ctrl:
-    motor = ctrl.add_damiao_motor(0x04, 0x14, "4310")
-```
-
-### CLI 用法
-
-```bash
-# 扫描 USB2CANFD_DUAL 全部通道：0 和 1
-motorbridge-cli scan \
-  --vendor damiao \
-  --transport dm-device \
-  --dm-device-type usb2canfd-dual \
-  --model 4310 \
-  --start-id 1 \
-  --end-id 16
-
-# 扫描 LINKX4C 全部通道：0、1、2、3
-motorbridge-cli scan \
-  --vendor damiao \
-  --transport dm-device \
-  --dm-device-type linkx4c \
-  --model 4310 \
-  --start-id 1 \
-  --end-id 8
-
-# 控制单一路物理通道
-motorbridge-cli run \
-  --vendor damiao \
-  --transport dm-device \
-  --dm-device-type linkx4c \
-  --dm-channel 0 \
-  --model 4310 \
-  --motor-id 0x04 \
-  --feedback-id 0x14 \
-  --mode enable \
-  --loop 1
-```
-
-<Note>
-扫描模式下不传 `--dm-channel` 会扫描所选适配器的全部通道；只有想限制到单一路
-物理通道时才传 `--dm-channel`。
-</Note>
-
 ### 串口配置（三平台）
 
 Linux：
@@ -243,6 +179,49 @@ Windows（PowerShell）：
 | 达妙 USB-CAN | /dev/ttyACM0 | 默认 |
 | USB-串口适配器 | /dev/ttyUSB0 | 使用 `dmesg` 检查 |
 
+## DM-Device（DM_Device SDK）
+
+基于达妙 DM_Device SDK 的原生传输，用于 `USB2CANFD`、`USB2CANFD_DUAL` 与 `LINKX4C` 适配器。适配器须为 USB 模式；该传输仅用于达妙电机。
+
+### 使用方法
+
+```python
+from motorbridge import Controller
+
+# 打开 DM-Device 传输
+with Controller.from_dm_device("usb2canfd", dm_channel=0) as ctrl:
+    motor = ctrl.add_damiao_motor(0x01, 0x11, "4340P")
+    # ... 控制电机
+```
+
+### 参数
+
+| 参数 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `dm_device_type` | str | — | `usb2canfd`、`usb2canfd-dual` 或 `linkx4c` |
+| `dm_channel` | int 或 None | None | 通道号。`usb2canfd` 用 `0`；`usb2canfd-dual` 用 `0`/`1`；`linkx4c` 用 `0..3`。省略则扫描所选适配器的所有通道。 |
+
+### 支持的厂商
+
+- 仅达妙
+
+### 运行时要求
+
+Python wheel 不内嵌厂商运行时。若 DM_Device 运行时缺失，MotorBridge 会打印所需运行时文件、其 GitHub 下载 URL、放置位置，以及平台 ABI 要求。
+
+- Linux x86_64：`libusb-1.0.so.0`、`GLIBC_2.14+`、`libstdc++.so.6`（`GLIBCXX_3.4.32`）
+- Linux aarch64：`GLIBC_2.17+`、`libstdc++.so.6`（`GLIBCXX_3.4.22+`）
+
+使用内置 helper 按需安装运行时：
+
+```bash
+motorbridge-install-dm-device
+```
+
+<Note>
+Windows DM_Device 运行时仅限 x86_64。长时间运行的进程会复用已打开的适配器，避免重复打开。
+</Note>
+
 ## 传输选择指南
 
 ### 决策树
@@ -252,7 +231,7 @@ Windows（PowerShell）：
 │
 ├── Hexfellow ──→ from_socketcanfd（必需）
 │
-├── 达妙 + DM_Device USB2CANFD/DUAL/LINKX4C ──→ from_dm_device
+├── 带 USB2CANFD / USB2CANFD_DUAL / LINKX4C 的达妙 ──→ from_dm_device
 │
 ├── 带有 USB-CAN 适配器的达妙 ──→ from_dm_serial
 │
@@ -295,6 +274,7 @@ with Controller("can0") as rs_ctrl:
 | SocketCAN | ~1-2 ms | ~5000 msg/s |
 | CAN-FD | ~0.5-1 ms | ~10000 msg/s |
 | DM 串口 | ~2-5 ms | ~2000 msg/s |
+| DM-Device | ~1-2 ms | ~5000 msg/s |
 
 ### 建议
 

@@ -67,6 +67,21 @@ Common control/state APIs:
 - MyActuator: `motor_controller_add_myactuator_motor(...)`
 - HighTorque: `motor_controller_add_hightorque_motor(...)`
 
+## ABI Metadata
+
+The ABI exposes metadata entrypoints so tools, gateways, and language bindings
+can discover the loaded ABI version and supported transports/vendors/features:
+
+- `motor_abi_version()` — returns the loaded ABI version string.
+- `motor_abi_capabilities_json()` — returns a JSON string describing
+  supported transports, vendors, modes, and ops.
+
+These mirror the Python helpers `motorbridge.abi_version()` /
+`motorbridge.abi_capabilities()` and the C++ helpers
+`motorbridge::abi_version()` / `motorbridge::abi_capabilities_json()`. The
+canonical binding/API surface list is `bindings/api_surface.json`, used to keep
+ABI, Python, C++, and documentation aligned.
+
 ## Unified Mode to Native Protocol Mapping
 
 | Unified mode | Damiao native | Hexfellow native | RobStride native | MyActuator native | HighTorque native |
@@ -101,12 +116,15 @@ RobStride extensions:
 - `motor_handle_robstride_set_device_id`
 - `motor_handle_robstride_write_param_i8/u8/u16/u32/f32`
 - `motor_handle_robstride_get_param_i8/u8/u16/u32/f32`
+- `motor_handle_robstride_send_pos_vel_pp` (PP sequence)
+- `motor_handle_robstride_send_pos_vel_csp` (CSP sequence)
 
 ## Typical Call Flow
 
 1. Transport constructor:
    - `motor_controller_new_socketcan(channel)` (general path)
    - `motor_controller_new_dm_serial(serial_port, baud)` (Damiao-only serial bridge; cross-platform, e.g. `/dev/ttyACM0` or `COM3`)
+   - `motor_controller_new_dm_device(dm_device_type, dm_channel)` (Damiao-only, DM_Device SDK: `USB2CANFD` / `USB2CANFD_DUAL` / `LINKX4C`)
 2. `motor_controller_add_<vendor>_motor`
 3. optional: `motor_controller_enable_all`
 4. optional: `motor_handle_ensure_mode`

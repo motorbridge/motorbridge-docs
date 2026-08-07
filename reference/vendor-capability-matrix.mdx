@@ -1,4 +1,4 @@
-# Reference: Vendor Capability Matrix
+﻿# Reference: Vendor Capability Matrix
 
 <mintly-toc>
 
@@ -10,8 +10,10 @@ This page tracks the production capability status across vendors in motorbridge.
 
 | Vendor | Add Method | Typical Transport | Protocol Family |
 |--------|------------|-------------------|-----------------|
-| Damiao | `add_damiao_motor()` | SocketCAN, DM Serial | DM-J4310/4340 |
+| Damiao | `add_damiao_motor()` | SocketCAN, DM Serial, DM-Device | DM-J4310/4340 |
 | RobStride | `add_robstride_motor()` | SocketCAN | RobStride Extended CAN |
+| RobStride (CiA402, exp.) | `add_robstride_motor(..., vendor="robstride_cia402")` | SocketCAN | CANopen/CiA402 (`F_CMD=1`) |
+| RobStride (MIT, exp.) | `add_robstride_motor(..., vendor="robstride_mit")` | SocketCAN | RobStride MIT (`F_CMD=2`) |
 | MyActuator | `add_myactuator_motor()` | SocketCAN | MyActuator RMD |
 | HighTorque | `add_hightorque_motor()` | SocketCAN | HighTorque native |
 | Hexfellow | `add_hexfellow_motor()` | CAN-FD | Hexfellow MIT |
@@ -21,7 +23,7 @@ This page tracks the production capability status across vendors in motorbridge.
 | Vendor | Typical Models | MIT | POS_VEL | VEL | FORCE_POS |
 |--------|----------------|-----|---------|-----|-----------|
 | Damiao | 4310, 4340P, 6006 | ✅ | ✅ | ✅ | ✅ |
-| RobStride | rs-00 through rs-06 | ✅ | ✅ | ✅ | ❌ |
+| RobStride | rs-00 through rs-06 | ✅ | ✅ (= PP; CSP variant) | ✅ | ❌ |
 | MyActuator | X8 | ❌ | ✅ | ✅ | ❌ |
 | HighTorque | hightorque | ✅ | ✅ | ✅ | ✅ |
 | Hexfellow | hexfellow | ✅ | ✅ | ❌ | ❌ |
@@ -29,11 +31,15 @@ This page tracks the production capability status across vendors in motorbridge.
 ### RobStride Mapping Notes
 
 - `MIT` maps to native impedance packet (`pos/vel/kp/kd/tau` all effective).
-- `POS_VEL` maps to native position flow (`run_mode=1`, `loc_ref`, `limit_spd`, optional `loc_kp`).
+- `POS_VEL` maps to native position flow, i.e. PP (`run_mode=1`, `loc_ref`, `limit_spd`, optional `loc_kp`). Unified `pos-vel` takes this PP path (via `limit_spd`).
 - Always pass the physical RobStride model (`rs-00` ... `rs-06`) for limits and logs. High-level control and runtime parameter read/write share the protocol section 4 table (`0x7005..0x702E`).
 - Full runtime parameter tables are available in [RobStride Parameter Tables](/reference/robstride-parameter-tables).
 - In unified `pos-vel`, CLI args `--vel/--kd/--tau` are ignored by design and shown as warnings.
 - Torque/current is currently parameter-level only (`write-param`), not a separate unified mode (`FORCE_POS` remains ❌).
+- **PP / CSP:** Unified `pos-vel` is already PP (via `limit_spd`). For full PP parameters (`vel_max` + `acc_set`) or CSP (`run_mode=5`), use `robstride_send_pos_vel_pp` / `robstride_send_pos_vel_csp`. See [RobStride Parameter Tables](/reference/robstride-parameter-tables#pp--csp-position-modes).
+- **Firmware version:** RobStride firmware version request and reply decoding is available (`--mode firmware-version`).
+- **Mode-aware controlled stop:** `handle_stop` is hardened and performs a mode-aware controlled stop.
+- **Experimental vendor paths:** `robstride_cia402` (CANopen/CiA402, `F_CMD=1`) and `robstride_mit` (MIT, `F_CMD=2`) expose core CLI entry points and docs but are **not production-ready** — real-device validation matrices, high-rate/control ergonomics, EDS/PDO/SYNC coverage, and `dm-device` transport wiring are still pending.
 
 ## Unified Mode -> Native Vendor Mapping
 
@@ -44,16 +50,16 @@ This page tracks the production capability status across vendors in motorbridge.
 | `VEL` | Native VEL | Native Velocity | Native Velocity | Native Velocity | Not supported |
 | `FORCE_POS` | Native FORCE_POS | Not supported | Not supported | Mapped to native pos+vel+tqe | Not supported |
 
-## Experimental Section: Vendor-Native Protocol Entrypoints (Implemented)
+## Vendor-Native Commands (Beyond Unified Modes)
 
-> This section exposes implemented vendor-native capabilities that are outside the unified 4-mode surface, mainly for commissioning/debug workflows.
+> These vendor-native commands are available alongside the unified four modes, mainly for commissioning and debugging.
 
 | Vendor | Native Entrypoints (examples) | Notes |
 |--------|--------------------------------|-------|
 | Damiao | `id-dump`, `id-set`, `damiao-read-param`, `damiao-write-param --store 1` (CLI) + `set_zero_position()` (API) | Register/parameter R/W, ID update, zeroing flow |
 | RobStride | `ping`, `robstride-read-param`, `robstride-write-param --store 1`, `run --mode read-param/write-param/save` | 29-bit extended-frame parameter path; runtime parameters use the common section 4 table (`0x7005..0x702E`); save uses type 22 with status ACK |
 | MyActuator | Vendor-native command path (adapter exposed) | Position/velocity-first flow, limited register surface |
-| HighTorque | Vendor-native command path (adapter exposed) | Internal scaling under unified API |
+| HighTorque | Vendor-native command path (adapter exposed) | Scaling handled automatically under the unified API |
 | Hexfellow | CAN-FD native path (`socketcanfd`) | Primarily MIT/POS_VEL, requires CAN-FD |
 
 ### RobStride Native Parameter Command (Cross-Platform)
@@ -76,7 +82,7 @@ motorbridge-cli robstride-read-param `
 
 Use `--model rs-06` only for a physical RS06 motor. For other RS00-RS05 motors, replace it with the actual model for limits/logging; runtime `read-param` / `write-param` uses the common section 4 table.
 
-Persist a RobStride parameter in v0.4.1:
+Persist a RobStride parameter in v0.5.0:
 
 ```bash
 motorbridge-cli robstride-write-param \

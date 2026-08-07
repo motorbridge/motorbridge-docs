@@ -27,9 +27,9 @@ Current source alignment:
 
 | Component | Source file | Current version |
 |-----------|-------------|-----------------|
-| Planned Git release tag | `motorbridge` repository | `v0.4.1` |
-| Python package | `bindings/python/pyproject.toml` | `0.4.1` |
-| Rust workspace crates | `Cargo.toml` `[workspace.package]` | `0.4.1` |
+| Planned Git release tag | `motorbridge` repository | `v0.5.0` |
+| Python package | `bindings/python/pyproject.toml` | `0.5.0` |
+| Rust workspace crates | `Cargo.toml` `[workspace.package]` | `0.5.0` |
 
 ```
 MAJOR.MINOR.PATCH[-PRERELEASE]
@@ -49,9 +49,9 @@ Examples:
 
 | Category | Example | Stability |
 |----------|---------|-----------|
-| Stable | `0.4.1` | Production ready |
-| Pre-release | `0.4.1a1` | Testing only |
-| Development | `0.4.1.dev1` | Internal use |
+| Stable | `0.5.0` | Production ready |
+| Pre-release | `0.5.0a1` | Testing only |
+| Development | `0.5.0.dev1` | Internal use |
 
 ## Installation Channels
 
@@ -62,7 +62,7 @@ Examples:
 pip install motorbridge
 
 # Specific version
-pip install motorbridge==0.4.1
+pip install motorbridge==0.5.0
 
 # Upgrade
 pip install --upgrade motorbridge
@@ -72,7 +72,7 @@ pip install --upgrade motorbridge
 
 ```bash
 # Install from TestPyPI
-pip install -i https://test.pypi.org/simple/ motorbridge==0.4.1a1
+pip install -i https://test.pypi.org/simple/ motorbridge==0.5.0a1
 ```
 
 <Warning>
@@ -83,10 +83,10 @@ Pre-release versions may have breaking changes and are not recommended for produ
 
 ```bash
 # Install from Git
-pip install git+https://github.com/tianrking/motorbridge@v0.4.1
+pip install git+https://github.com/motorbridge/motorbridge@v0.5.0
 
 # Install specific branch
-pip install git+https://github.com/tianrking/motorbridge@main
+pip install git+https://github.com/motorbridge/motorbridge@main
 ```
 
 ## Checking Installed Version
@@ -126,11 +126,11 @@ Stay on stable versions, upgrade for bug fixes:
 
 ```bash
 # Current: any older 0.x release
-# Upgrade to latest stable: 0.4.1
+# Upgrade to latest stable: 0.5.0
 pip install --upgrade motorbridge
 
 # Or specific patch
-pip install motorbridge==0.4.1
+pip install motorbridge==0.5.0
 ```
 
 ### Early Adopter
@@ -139,13 +139,13 @@ Test pre-releases in development:
 
 ```bash
 # Development environment
-pip install -i https://test.pypi.org/simple/ motorbridge==0.4.1b1
+pip install -i https://test.pypi.org/simple/ motorbridge==0.5.0b1
 
 # Test your code
 python3 -m pytest tests/
 
 # Production stays on stable
-pip install motorbridge==0.4.1
+pip install motorbridge==0.5.0
 ```
 
 ### Pinned Versions
@@ -154,14 +154,14 @@ For reproducible deployments:
 
 ```requirements.txt
 # requirements.txt
-motorbridge==0.4.1
+motorbridge==0.5.0
 ```
 
 Or with version constraints:
 
 ```requirements.txt
 # Allow patches, block minor/major changes
-motorbridge>=0.4.1,<0.5.0
+motorbridge>=0.5.0,<0.6.0
 ```
 
 ## API Stability
@@ -180,50 +180,13 @@ motorbridge>=0.4.1,<0.5.0
 
 ## Changelog
 
-### v0.4.1
-
-- Added ABI metadata discovery through `motor_abi_version()` and `motor_abi_capabilities_json()`
-- Added Python helpers `motorbridge.abi_version()` and `motorbridge.abi_capabilities()`
-- Added C++ helpers `motorbridge::abi_version()` and `motorbridge::abi_capabilities_json()`
-- Completed C++ RobStride wrapper parity with Python
-- Added `bindings/api_surface.json` as the binding/API alignment checklist
-- Advanced Python, Rust workspace, and C++ metadata to `0.4.1`
-
-### v0.4.0
-
-- Fixed Windows Damiao `dm-serial` whole-arm scans in `ws_gateway` by releasing active sessions before scan probes reuse the serial bridge
-- Added `damiao_state_many` for multi-joint Damiao browser telemetry
-- Added Damiao state identity fields (`motor_id`, `feedback_id`, `model`) to gateway snapshots
-- Requested fresh Damiao feedback before returning gateway state values
-- Advanced Python, Rust workspace, and C++ metadata to `0.4.0`
-
-### v0.3.9
-
-- Corrected RobStride unified `request_feedback()` semantics to a non-blocking no-op
-- Documented `robstride_ping()` for connectivity and typed parameter reads for fresh position/velocity values
-- Advanced Python, Rust workspace, and C++ metadata to `0.3.9`
-
-### v0.3.8
-
-- Added RobStride `pos-vel-pp` and `pos-vel-csp` control paths
-- Added C ABI, Python binding, Python CLI, and Rust CLI support for PP/CSP entrypoints
-- Removed the default RobStride parameter-write ack wait from the high-rate path
-- Advanced Python, Rust workspace, and C++ metadata to `0.3.8`
-
-### v0.3.7
-
-- Fixed Windows PCAN RobStride scans to probe one host/feedback ID at a time
-- Fixed gateway RobStride scans to use exact requested host IDs and release active sessions before probing
-- Added gateway `capabilities` and optional `MOTORBRIDGE_WS_DEBUG=1` diagnostics
-- Advanced Python, Rust workspace, and C++ metadata to `0.3.7`
-
-### v0.3.5
+### v0.5.0
 
 - Hardened ABI controller and motor handles with per-handle locking while keeping public symbols compatible
 - Added Python closed-handle guards so calls after `close()` raise `CallError` instead of passing null handles into the ABI
 - Added `CoreController` drop-time polling cleanup so background receive workers stop when controllers are dropped
-- Split the Python CLI into the `motorbridge.cli` package while preserving public entrypoints
-- Improved RobStride scan efficiency and locked MIT argument encoding with regression tests
+- Split the Python CLI into the `motorbridge.cli` package while preserving `motorbridge-cli`, `python -m motorbridge`, and legacy flat run arguments
+- Improved RobStride scan efficiency, documented valid RobStride `pos-vel` arguments, and locked MIT argument encoding with regression tests
 
 ### v0.3.4
 
@@ -296,7 +259,7 @@ For maintainers releasing new versions:
 1. **Update version:**
    ```bash
    # Update [project].version in bindings/python/pyproject.toml
-   version = "0.4.1"
+   version = "0.5.0"
    ```
 
 2. **Update changelog:**
@@ -305,8 +268,8 @@ For maintainers releasing new versions:
 
 3. **Tag release:**
    ```bash
-   git tag v0.4.1
-   git push origin v0.4.1
+   git tag v0.5.0
+   git push origin v0.5.0
    ```
 
 4. **Build package:**
@@ -323,7 +286,7 @@ For maintainers releasing new versions:
 
 6. **Verify installation:**
    ```bash
-   pip install -i https://test.pypi.org/simple/ motorbridge==0.4.1
+   pip install -i https://test.pypi.org/simple/ motorbridge==0.5.0
    python3 -m pytest tests/
    ```
 
@@ -344,7 +307,7 @@ Once a version is uploaded to PyPI, it cannot be overwritten. Always increment t
 
 ```bash
 # Bad: Trying to re-upload same version
-twine upload dist/motorbridge-0.4.1.tar.gz
+twine upload dist/motorbridge-0.5.0.tar.gz
 # Error: File already exists
 
 # Solution: Increment version
@@ -385,4 +348,4 @@ jobs:
 
 - [Installation Guide](install) - Install and verify
 - [Troubleshooting](best-practices/troubleshooting) - Common issues
-- [Changelog](https://github.com/tianrking/motorbridge/releases) - Release history
+- [Changelog](https://github.com/motorbridge/motorbridge/releases) - Release history

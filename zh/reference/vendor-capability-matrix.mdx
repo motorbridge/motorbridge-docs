@@ -14,8 +14,10 @@ title: 厂商能力矩阵
 
 | 厂商 | 添加方法 | 典型传输 | 协议族 |
 |------|----------|----------|--------|
-| Damiao | `add_damiao_motor()` | SocketCAN, DM 串口 | DM-J4310/4340 |
+| Damiao | `add_damiao_motor()` | SocketCAN, DM 串口, DM-Device | DM-J4310/4340 |
 | RobStride | `add_robstride_motor()` | SocketCAN | RobStride 扩展 CAN |
+| RobStride (CiA402, 实验) | `add_robstride_motor(..., vendor="robstride_cia402")` | SocketCAN | CANopen/CiA402（`F_CMD=1`） |
+| RobStride (MIT, 实验) | `add_robstride_motor(..., vendor="robstride_mit")` | SocketCAN | RobStride MIT（`F_CMD=2`） |
 | MyActuator | `add_myactuator_motor()` | SocketCAN | MyActuator RMD |
 | HighTorque | `add_hightorque_motor()` | SocketCAN | HighTorque 原生 |
 | Hexfellow | `add_hexfellow_motor()` | CAN-FD | Hexfellow MIT |
@@ -25,7 +27,7 @@ title: 厂商能力矩阵
 | 厂商 | 典型型号 | MIT | POS_VEL | VEL | FORCE_POS |
 |------|----------|-----|---------|-----|-----------|
 | Damiao | 4310, 4340P, 6006 | ✅ | ✅ | ✅ | ✅ |
-| RobStride | rs-00, rs-01, rs-06 | ✅ | ✅ | ✅ | ❌ |
+| RobStride | rs-00, rs-01, rs-06 | ✅ | ✅ (= PP；另有 CSP) | ✅ | ❌ |
 | MyActuator | X8 | ❌ | ✅ | ✅ | ❌ |
 | HighTorque | hightorque | ✅ | ✅ | ✅ | ✅ |
 | Hexfellow | hexfellow | ✅ | ✅ | ❌ | ❌ |
@@ -33,9 +35,13 @@ title: 厂商能力矩阵
 ### RobStride 映射说明
 
 - `MIT` 映射到原生阻抗控制报文（`pos/vel/kp/kd/tau` 均有效）。
-- `POS_VEL` 映射到原生位置流程（`run_mode=1` + `loc_ref` + `limit_spd` + 可选 `loc_kp`）。
+- `POS_VEL` 映射到原生位置流程，即 PP（`run_mode=1` + `loc_ref` + `limit_spd` + 可选 `loc_kp`）。统一 `pos-vel` 走的是这条 PP 路径（经 `limit_spd`）。
 - 统一 `pos-vel` 下，CLI 的 `--vel/--kd/--tau` 为无效参数：只给 warning，不报错。
 - 扭矩/电流目前仍是参数级能力（`write-param`），尚未独立成统一模式（因此 `FORCE_POS` 为 ❌）。
+- **PP / CSP：** 统一 `pos-vel` 已是 PP（经 `limit_spd`）。需完整 PP 参数（`vel_max` + `acc_set`）或 CSP（`run_mode=5`）时，改用 `robstride_send_pos_vel_pp` / `robstride_send_pos_vel_csp`。详见 [RobStride 参数表](/zh/reference/robstride-parameter-tables#pp--csp-位置模式)。
+- **固件版本：** 支持 RobStride 固件版本请求与应答解码（`--mode firmware-version`）。
+- **mode-aware 受控停止：** `handle_stop` 已加固，执行按模式区分的受控停止。
+- **实验性厂商路径：** `robstride_cia402`（CANopen/CiA402，`F_CMD=1`）与 `robstride_mit`（MIT，`F_CMD=2`）暴露核心 CLI 入口与文档，但**尚未达到量产可用**——真机验证矩阵、高速/控制人机工程、EDS/PDO/SYNC 覆盖、`dm-device` 传输接线仍待补。
 
 ## 统一模式 -> 厂商原生能力映射
 
@@ -46,9 +52,9 @@ title: 厂商能力矩阵
 | `VEL` | 原生 VEL | 原生 Velocity | 原生 Velocity | 原生 Velocity | 不支持 |
 | `FORCE_POS` | 原生 FORCE_POS | 不支持 | 不支持 | 映射到原生 pos+vel+tqe | 不支持 |
 
-## 实验章节：厂商原生协议入口（已实现）
+## 厂商原生命令（统一模式之外）
 
-> 该章节用于暴露“已实现但不属于统一四模式”的厂商原生能力，便于现场调试与协议联调。
+> 这些厂商原生命令在统一四模式之外提供，主要用于现场调试与协议联调。
 
 RobStride 完整运行时参数表见 [RobStride 参数表](/zh/reference/robstride-parameter-tables)。
 
@@ -57,7 +63,7 @@ RobStride 完整运行时参数表见 [RobStride 参数表](/zh/reference/robstr
 | Damiao | `id-dump`, `id-set`, `damiao-read-param`, `damiao-write-param --store 1`（CLI）+ `set_zero_position()`（API） | 寄存器/参数读写、ID 修改、置零流程 |
 | RobStride | `ping`, `robstride-read-param`, `robstride-write-param --store 1`, `run --mode read-param/write-param/save` | 29-bit 扩展帧参数通道；运行参数使用第 4 章通用表（`0x7005..0x702E`）；保存使用 type 22 并等待状态 ACK |
 | MyActuator | 厂商原生命令路径（由适配层暴露） | 以位置/速度主流程为主，寄存器能力有限 |
-| HighTorque | 厂商原生命令路径（由适配层暴露） | 统一接口下内部做缩放映射 |
+| HighTorque | 厂商原生命令路径（由适配层暴露） | 统一接口下自动完成缩放映射 |
 | Hexfellow | CAN-FD 原生路径（`socketcanfd`） | 主要覆盖 MIT/POS_VEL，依赖 CAN-FD |
 
 ### RobStride 原生参数命令（跨平台）

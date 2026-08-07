@@ -95,12 +95,15 @@ WS API 主链路已实现。
   "op": "capabilities",
   "data": {
     "api_version": "v1",
+    "gateway_version": "v0.5.0",
+    "batch_scan": true,
+    "robstride_exact_host_scan": true,
     "default_vendor": "damiao",
     "vendors": {
       "damiao": {
-        "transports": ["auto", "socketcan", "socketcanfd", "dm-serial"],
+        "transports": ["auto", "socketcan", "socketcanfd", "dm-serial", "dm-device"],
         "modes": ["mit", "pos_vel", "vel", "force_pos"],
-        "ops_unified": ["scan", "set_id", "enable", "disable", "stop", "state_once", "status", "verify"],
+        "ops_unified": ["scan", "set_id", "enable", "disable", "stop", "state_once", "status", "verify", "damiao_state_many"],
         "ops_vendor_native": ["write_register_u32", "write_register_f32", "get_register_u32", "get_register_f32"]
       },
       "robstride": {
@@ -132,6 +135,18 @@ WS API 主链路已实现。
   }
 }
 ```
+
+## 多关节状态与鉴权说明
+
+- **`damiao_state_many`：** 通过 `dm-serial` 一次逻辑请求刷新所有已发现达妙关节。
+  状态快照包含 `motor_id`、`feedback_id` 与 `model`，浏览器上位机可按关节合并整臂遥测，
+  而非把所有反馈都当作当前 target。状态读取在返回前以有界超时请求新鲜反馈。
+- **Token 鉴权：** 浏览器客户端可在 WebSocket URL query 中带
+  `?motorbridge_ws_token=...` 传入 `MOTORBRIDGE_WS_TOKEN`（header 鉴权与非回环 token 要求不变）。
+- **单电机命令收敛：** 单电机操作不再向多个已发现电机扩散，而是收敛到显式 target。
+- **RobStride 扫描：** 逐个、精确、顺序地探测 host/feedback ID（Windows PCAN 安全）。
+  后续轮次会跳过已发现的 ID。
+- **`param_stream enabled=false`：** 关闭流不再打开或重开硬件会话。
 
 ## 构建
 

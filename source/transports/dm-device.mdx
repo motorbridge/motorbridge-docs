@@ -1,0 +1,78 @@
+---
+title: "DM-Device Transport (DM_Device SDK)"
+---
+
+# DM-Device Transport (DM_Device SDK)
+
+<mintly-toc>
+
+The `dm-device` transport drives Damiao motors through the DaMiao DM_Device SDK instead of the serial bridge or SocketCAN. It supports the `USB2CANFD`, `USB2CANFD_DUAL`, and `LINKX4C` adapters, and is currently intended for the Damiao motor protocol only. The adapter must be in USB mode.
+
+</mintly-toc>
+
+## Constructor
+
+```python
+from motorbridge import Controller
+
+# USB2CANFD, channel 0
+with Controller.from_dm_device("usb2canfd", dm_channel=0) as ctrl:
+    motor = ctrl.add_damiao_motor(0x01, 0x11, "4340P")
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `dm_device_type` | `str` | — | `usb2canfd`, `usb2canfd-dual`, or `linkx4c` |
+| `dm_channel` | `int \| None` | `None` | `usb2canfd`: `0`; `usb2canfd-dual`: `0`/`1`; `linkx4c`: `0..3`. Omit to scan every channel for the selected adapter. |
+
+## Adapter Reference
+
+| `dm_device_type` | Adapter | Channels |
+|---|---|---|
+| `usb2canfd` | USB2CANFD | `0` |
+| `usb2canfd-dual` | USB2CANFD_DUAL | `0`, `1` |
+| `linkx4c` | LINKX4C | `0..3` |
+
+## Runtime Requirements
+
+Python wheels do **not** embed the vendor runtime. If the DM_Device runtime is
+missing, MotorBridge prints the required runtime file, its GitHub download URL,
+where to place it, and the platform ABI requirements.
+
+Install the runtime on demand:
+
+```bash
+motorbridge-install-dm-device
+```
+
+| Platform | Requirements |
+|---|---|
+| Linux x86_64 | `libusb-1.0.so.0`, `GLIBC_2.14+`, `libstdc++.so.6` with `GLIBCXX_3.4.32` |
+| Linux aarch64 | `GLIBC_2.17+`, `libstdc++.so.6` with `GLIBCXX_3.4.22+` |
+| Windows | x86_64 only |
+
+<Note>
+Long-running processes reuse the already-open adapter instead of reopening it.
+</Note>
+
+## CLI Usage
+
+```bash
+# Scan a USB2CANFD_DUAL channel 0 for Damiao motors
+motorbridge-cli scan --vendor damiao --transport dm-device \
+  --dm-device-type usb2canfd-dual --dm-channel 0 \
+  --start-id 1 --end-id 16
+
+# Omit --dm-channel to scan every channel for the selected adapter
+```
+
+## WebSocket Gateway
+
+`dm-device` is also exposed through `ws_gateway`. Targets carry
+`dm_device_type` and `dm_channel` fields. See
+[WebSocket Gateway](/source/integrations/ws-gateway/overview).
+
+## See Also
+
+- [Transports](/transports) — transport overview and selection guide
+- [API: Controller](/api/controller) — `Controller.from_dm_device`

@@ -1,0 +1,37 @@
+---
+title: "MotorBridge 0.4.2 Release Test Note"
+---
+
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.4.2 Release Test Note
+
+Date: 2026-06-03
+
+## Summary
+
+Optimizes Damiao `dm-serial` background polling and tightens serial read
+timeouts.
+
+## Version Alignment
+
+| Component | Version |
+|---|---|
+| Git release tag | `v0.4.2` |
+| Rust workspace crates | `0.4.2` |
+| Python package | `0.4.2` |
+| C++ package metadata | `0.4.2` |
+
+## Key Changes
+
+### Fixed
+
+- Optimized Damiao `dm-serial` background polling so `recv(0ms)` performs a
+  true non-blocking drain instead of waiting on the serial-port read timeout
+  when no bytes are pending.
+- Reduced the Damiao serial bridge read timeout from 2 ms to 1 ms for bounded
+  synchronous feedback/register reads while keeping compatibility fallbacks.
+
+## See Also
+
+- [Changelog](/source/repository/changelog)

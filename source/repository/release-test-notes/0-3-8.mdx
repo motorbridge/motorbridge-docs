@@ -2,17 +2,48 @@
 title: "MotorBridge 0.3.8 Release Test Note"
 ---
 
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.3.8 Release Test Note
+
 Date: 2026-05-26
 
-MotorBridge 0.3.8 adds RobStride PP/CSP-specific position-control paths:
-`pos-vel-pp`, `pos-vel-csp`, `robstride_send_pos_vel_pp()`, and
-`robstride_send_pos_vel_csp()`.
+## Summary
 
-Key checks:
+Adds RobStride `pos-vel-pp` and `pos-vel-csp` control paths following the
+vendor manual PP/CSP sequences, and removes the default blocking wait from
+type 18 parameter writes.
 
-- PP and CSP commands follow the vendor manual sequences.
-- High-rate prepared loops avoid paying an enable/ack wait each control cycle.
-- `MOTORBRIDGE_ROBSTRIDE_WRITE_ACK_TIMEOUT_MS` can restore conservative
-  synchronous waiting for RobStride parameter writes.
-- Python, Rust workspace, and C++ package metadata are aligned to `0.3.8`.
+## Version Alignment
 
+| Component | Version |
+|---|---|
+| Git release tag | `v0.3.8` |
+| Rust workspace crates | `0.3.8` |
+| Python package | `0.3.8` |
+| C++ package metadata | `0.3.8` |
+
+## Key Changes
+
+### Added
+
+- Added RobStride-specific `pos-vel-pp` and `pos-vel-csp` control paths.
+- Added C ABI and Python binding entrypoints for
+  `robstride_send_pos_vel_pp()` and `robstride_send_pos_vel_csp()`.
+- Added Python CLI and Rust CLI support for RobStride `pos-vel-pp` and
+  `pos-vel-csp`.
+- Added `robstride_posvel_timing_demo.py` to compare legacy `pos-vel`, PP, and
+  CSP timing, including full-sequence and prepared high-rate profiles.
+
+### Fixed
+
+- Removed the default 260 ms blocking wait from RobStride communication type
+  18 parameter writes; set `MOTORBRIDGE_ROBSTRIDE_WRITE_ACK_TIMEOUT_MS` to
+  restore conservative synchronous waiting.
+- Clarified the difference between RobStride full manual PP/CSP sequences and
+  high-rate prepared loops so users do not pay an `enable` ack wait every
+  control cycle.
+
+## See Also
+
+- [RobStride Parameter Tables](/reference/robstride-parameter-tables)

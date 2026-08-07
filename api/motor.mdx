@@ -220,7 +220,58 @@ motor.send_pos_vel(pos=2.0, vlim=1.5)
 ```
 
 <Note>
-RobStride supports POS_VEL mode.
+RobStride supports POS_VEL mode. A `vlim` of `0` skips the `limit_spd` (`0x7017`) write, so the motor keeps its last set velocity limit; only `loc_ref` (`0x7016`) is written. Pass a non-zero `vlim` to update the limit. PP/CSP variants `robstride_send_pos_vel_pp` / `robstride_send_pos_vel_csp` follow the vendor manual PP/CSP sequences and apply the same `> 0` guard to their velocity/acceleration registers; for high-rate loops use a prepared profile and write `loc_ref` directly each cycle.
+</Note>
+
+---
+
+### `robstride_send_pos_vel_pp(pos, vel_max, acc_set)` (RobStride)
+
+Send RobStride PP (Profile Position) mode command. Motor moves to the target position via a profiled trajectory.
+
+**Parameters:**
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| `pos` | `float` | required | Target position (radians) → writes `loc_ref` (`0x7016`) |
+| `vel_max` | `float` | required | Max velocity (rad/s) → writes `vel_max` (`0x7024`) |
+| `acc_set` | `float` | required | Acceleration (rad/s²) → writes `acc_set` (`0x7025`) |
+
+**Returns:** `None`
+
+**Raises:** `CallError` on failure
+
+**Example:**
+
+```python
+motor.robstride_send_pos_vel_pp(pos=1.0, vel_max=2.0, acc_set=10.0)
+```
+
+---
+
+### `robstride_send_pos_vel_csp(pos, vlim)` (RobStride)
+
+Send RobStride CSP (Cyclic Synchronous Position) mode command. Motor cyclically tracks the target position each cycle.
+
+**Parameters:**
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| `pos` | `float` | required | Target position (radians) → writes `loc_ref` (`0x7016`) |
+| `vlim` | `float` | required | Velocity limit (rad/s) → writes `limit_spd` (`0x7017`) |
+
+**Returns:** `None`
+
+**Raises:** `CallError` on failure
+
+**Example:**
+
+```python
+motor.robstride_send_pos_vel_csp(pos=1.0, vlim=2.0)
+```
+
+<Note>
+PP and CSP both write the position target to `loc_ref` (`0x7016`), but their velocity/acceleration registers differ: PP writes `vel_max` (`0x7024`) + `acc_set` (`0x7025`); CSP writes `limit_spd` (`0x7017`). The modes also differ: PP uses `run_mode=1`, CSP uses `run_mode=5`.
 </Note>
 
 ---

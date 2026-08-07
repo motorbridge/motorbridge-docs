@@ -1,0 +1,40 @@
+---
+title: "ABI 元数据与能力发现"
+---
+
+# ABI 元数据与能力发现
+
+<mintly-toc>
+
+ABI 暴露元数据入口，便于工具、网关与各语言绑定在运行时发现当前加载的 ABI 版本与所支持的传输/厂商/能力。
+
+</mintly-toc>
+
+## 入口
+
+| 层 | 版本 | 能力 |
+|---|---|---|
+| C ABI | `motor_abi_version()` | `motor_abi_capabilities_json()` |
+| Python | `motorbridge.abi_version()` | `motorbridge.abi_capabilities()` |
+| C++ | `motorbridge::abi_version()` | `motorbridge::abi_capabilities_json()` |
+
+## Python 示例
+
+```python
+import motorbridge
+
+print(motorbridge.abi_version())
+caps = motorbridge.abi_capabilities()
+# caps 暴露所支持的传输、厂商、模式与操作
+```
+
+## 使用场景
+
+- 网关（如 `ws_gateway`）通过 `{"op":"capabilities"}` 操作上报 `gateway_version` 与能力标志。
+- 各语言绑定与工具无需硬编码能力矩阵即可检测传输/厂商/模式支持。
+
+## 相关
+
+- [ABI 指南](/zh/source/project/abi)
+- [API：Controller](/zh/api/controller)
+- [WebSocket 网关](/zh/source/integrations/ws-gateway/overview)

@@ -2,6 +2,8 @@
 title: CAN ID 与型号速查
 ---
 
+# 参考：CAN ID 与型号速查表
+
 <mintly-toc>
 
 本速查表提供 CAN ID、型号字符串和常见配置的快速参考。大多数运行时问题来自错误的 `(model, motor_id, feedback_id)` 组合。
@@ -100,9 +102,16 @@ with Controller.from_dm_serial("/dev/ttyACM0", 921600) as ctrl:
 | `rs-05` | RobStride RS05 |
 | `rs-06` | RobStride RS06 |
 
-RobStride 在 RS 系列上保持统一上层命令形态。MotorBridge v0.4.1 的参数读写使用协议第 4 章通用运行表（`0x7005..0x702E`）。
+RobStride 在 RS 系列上保持统一上层命令形态。MotorBridge v0.5.0 的参数读写使用协议第 4 章通用运行表（`0x7005..0x702E`）。
 
 运行时编码/解码使用的完整文本表见 [RobStride 参数表](/zh/reference/robstride-parameter-tables)。
+
+<Note>
+**协议 ID 角色：** RobStride 有三条协议路径——私有扩展帧路径（默认）、
+CANopen/CiA402 路径（`F_CMD=1`，`robstride_cia402`，实验性）与 MIT 路径（`F_CMD=2`，
+`robstride_mit`，实验性）。`feedback_id` 是 host/应答方 ID，不是电机/设备 ID。Windows PCAN
+下，扫描会逐个 host/feedback ID 顺序探测，避免同一 CAN 通道上多个接收 worker 竞争。
+</Note>
 
 ### CAN ID 规则
 

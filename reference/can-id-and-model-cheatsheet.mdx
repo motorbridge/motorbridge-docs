@@ -93,9 +93,18 @@ with Controller.from_dm_serial("/dev/ttyACM0", 921600) as ctrl:
 | `rs-05` | RobStride RS05 |
 | `rs-06` | RobStride RS06 |
 
-RobStride uses one upper-level command shape across RS models. Parameter read/write in MotorBridge v0.4.1 uses the common protocol section 4 runtime table (`0x7005..0x702E`).
+RobStride uses one upper-level command shape across RS models. Parameter read/write in MotorBridge v0.5.0 uses the common protocol section 4 runtime table (`0x7005..0x702E`).
 
 For the complete text tables used by the runtime encoder/decoder, see [RobStride Parameter Tables](/reference/robstride-parameter-tables).
+
+<Note>
+**Protocol ID roles:** RobStride has three protocol paths — the private
+extended-frame path (default), the CANopen/CiA402 path (`F_CMD=1`,
+`robstride_cia402`, experimental), and the MIT path (`F_CMD=2`,
+`robstride_mit`, experimental). The `feedback_id` is the host/responder ID, not
+the motor/device ID. On Windows PCAN, scans probe one host/feedback ID at a
+time to avoid competing receive workers on the same CAN channel.
+</Note>
 
 ### CAN ID Convention
 

@@ -2,6 +2,8 @@
 title: 安装环境
 ---
 
+# 安装与环境
+
 <mintly-toc>
 
 本指南介绍如何在 Linux、Windows、macOS 上安装 `motorbridge` Python 包。
@@ -33,7 +35,7 @@ python3 -m pip install motorbridge
 ### 安装特定版本
 
 ```bash
-python3 -m pip install motorbridge==0.4.1
+python3 -m pip install motorbridge==0.5.0
 ```
 
 ### 升级现有安装
@@ -173,7 +175,7 @@ DYLD_LIBRARY_PATH="$PKG_DIR/lib:${DYLD_LIBRARY_PATH:-}" "$GW" --bind 127.0.0.1:9
 python3 -m pip install --pre -i https://test.pypi.org/simple/ motorbridge
 
 # 或安装指定预发布版本
-python3 -m pip install -i https://test.pypi.org/simple/ motorbridge==0.4.1a1
+python3 -m pip install -i https://test.pypi.org/simple/ motorbridge==0.5.0a1
 ```
 
 <Note>
@@ -185,7 +187,7 @@ python3 -m pip install -i https://test.pypi.org/simple/ motorbridge==0.4.1a1
 ### 从源码安装（Git）
 
 ```bash
-git clone https://github.com/tianrking/motorbridge
+git clone https://github.com/motorbridge/motorbridge
 cd motorbridge
 cargo build -p motor_abi --release
 cd bindings/python
@@ -289,7 +291,7 @@ motorbridge-cli scan --vendor damiao --transport auto --channel can0 --start-id 
 
 ```bash
 curl -L -o macOS_Library_for_PCANUSB_v0.13.tar.gz \
-  https://raw.githubusercontent.com/tianrking/motorbridge/main/third_party/pcan/macos/macOS_Library_for_PCANUSB_v0.13.tar.gz
+  https://raw.githubusercontent.com/motorbridge/motorbridge/main/third_party/pcan/macos/macOS_Library_for_PCANUSB_v0.13.tar.gz
 tar -xzf macOS_Library_for_PCANUSB_v0.13.tar.gz
 cd PCBUSB
 sudo ./install.sh

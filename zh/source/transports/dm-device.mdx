@@ -1,0 +1,76 @@
+---
+title: "DM-Device 传输（DM_Device SDK）"
+---
+
+# DM-Device 传输（DM_Device SDK）
+
+<mintly-toc>
+
+`dm-device` 传输通过达妙 DM_Device SDK 驱动达妙电机，而非串口桥或 SocketCAN。支持 `USB2CANFD`、`USB2CANFD_DUAL` 与 `LINKX4C` 适配器，目前仅用于达妙电机协议。适配器须为 USB 模式。
+
+</mintly-toc>
+
+## 构造函数
+
+```python
+from motorbridge import Controller
+
+# USB2CANFD，通道 0
+with Controller.from_dm_device("usb2canfd", dm_channel=0) as ctrl:
+    motor = ctrl.add_damiao_motor(0x01, 0x11, "4340P")
+```
+
+| 参数 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `dm_device_type` | `str` | — | `usb2canfd`、`usb2canfd-dual` 或 `linkx4c` |
+| `dm_channel` | `int \| None` | `None` | `usb2canfd`: `0`；`usb2canfd-dual`: `0`/`1`；`linkx4c`: `0..3`。省略则扫描所选适配器的所有通道。 |
+
+## 适配器参考
+
+| `dm_device_type` | 适配器 | 通道 |
+|---|---|---|
+| `usb2canfd` | USB2CANFD | `0` |
+| `usb2canfd-dual` | USB2CANFD_DUAL | `0`, `1` |
+| `linkx4c` | LINKX4C | `0..3` |
+
+## 运行时要求
+
+Python wheel **不**内嵌厂商运行时。若 DM_Device 运行时缺失，MotorBridge 会打印所需
+运行时文件、其 GitHub 下载 URL、放置位置，以及平台 ABI 要求。
+
+按需安装运行时：
+
+```bash
+motorbridge-install-dm-device
+```
+
+| 平台 | 要求 |
+|---|---|
+| Linux x86_64 | `libusb-1.0.so.0`、`GLIBC_2.14+`、`libstdc++.so.6`（`GLIBCXX_3.4.32`） |
+| Linux aarch64 | `GLIBC_2.17+`、`libstdc++.so.6`（`GLIBCXX_3.4.22+`） |
+| Windows | 仅 x86_64 |
+
+<Note>
+长时间运行的进程会复用已打开的适配器，避免重复打开同一 USB 适配器。
+</Note>
+
+## CLI 用法
+
+```bash
+# 在 USB2CANFD_DUAL 通道 0 上扫描达妙电机
+motorbridge-cli scan --vendor damiao --transport dm-device \
+  --dm-device-type usb2canfd-dual --dm-channel 0 \
+  --start-id 1 --end-id 16
+
+# 省略 --dm-channel 则扫描所选适配器的所有通道
+```
+
+## WebSocket 网关
+
+`dm-device` 也通过 `ws_gateway` 暴露。target 携带 `dm_device_type` 与
+`dm_channel` 字段。详见 [WebSocket 网关](/zh/source/integrations/ws-gateway/overview)。
+
+## 相关
+
+- [传输方式](/zh/transports) — 传输概览与选择指南
+- [API：Controller](/zh/api/controller) — `Controller.from_dm_device`

@@ -1,0 +1,35 @@
+---
+title: "MotorBridge 0.4.9 Release Test Note"
+---
+
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.4.9 Release Test Note
+
+Date: 2026-07-06
+
+## Summary
+
+Aligns RobStride `rs-00` and `rs-06` torque-limit metadata with vendor-provided
+values.
+
+## Version Alignment
+
+| Component | Version |
+|---|---|
+| Git release tag | `v0.4.9` |
+| Rust workspace crates | `0.4.9` |
+| Python package | `0.4.9` |
+| C++ package metadata | `0.4.9` |
+
+## Key Changes
+
+### Fixed
+
+- Aligned RobStride `rs-00` and `rs-06` torque-limit metadata with the
+  vendor-provided values so model specs, validation, and downstream tooling use
+  the correct maximum torque ranges.
+
+## See Also
+
+- [RobStride Parameter Tables](/reference/robstride-parameter-tables)

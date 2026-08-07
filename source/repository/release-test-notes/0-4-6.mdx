@@ -1,0 +1,42 @@
+---
+title: "MotorBridge 0.4.6 Release Test Note"
+---
+
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.4.6 Release Test Note
+
+Date: 2026-06-12
+
+## Summary
+
+Adds a Damiao `4340_v20` model alias, WebSocket token-in-query auth, and fixes
+duplicate-motor registration during state polling.
+
+## Version Alignment
+
+| Component | Version |
+|---|---|
+| Git release tag | `v0.4.6` |
+| Rust workspace crates | `0.4.6` |
+| Python package | `0.4.6` |
+| C++ package metadata | `0.4.6` |
+
+## Key Changes
+
+### Fixed
+
+- Reused existing Damiao motor handles during `damiao_state_many` polling so
+  repeated browser telemetry no longer fails on duplicate motor registration.
+- Allowed browser `ws_gateway` clients to send `MOTORBRIDGE_WS_TOKEN` in the
+  WebSocket URL query as `?motorbridge_ws_token=...` while keeping existing
+  header-based auth and non-loopback token requirements unchanged.
+
+### Added
+
+- Damiao `4340_v20` alias with `4340X` display name for the v2.0 hardware
+  revision.
+
+## See Also
+
+- [WebSocket Gateway](/source/integrations/ws-gateway/overview)

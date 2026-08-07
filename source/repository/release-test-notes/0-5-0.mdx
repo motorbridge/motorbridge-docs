@@ -1,0 +1,46 @@
+---
+title: "MotorBridge 0.5.0 Release Test Note"
+---
+
+<Note>Source: tag `v0.5.0` diff (CHANGELOG entry not yet present upstream)</Note>
+
+# MotorBridge 0.5.0 Release Test Note
+
+Date: 2026-07-22
+
+## Summary
+
+RobStride `rs-05` velocity/torque limit alignment with the RS05 manual, rs
+velocity normalization range fix, and a RobStride firmware version request +
+reply decoding. Also performs an org-rename from `tianrking` to `motorbridge`.
+
+## Version Alignment
+
+| Component | Version |
+|---|---|
+| Git release tag | `v0.5.0` |
+| Rust workspace crates | `0.5.0` |
+| Python package | `0.5.0` |
+| C++ package metadata | `0.5.0` |
+
+## Key Changes
+
+### Added
+
+- RobStride firmware version request and reply decoding (`5e54fe1`).
+
+### Fixed
+
+- Corrected rs velocity normalization range (`082cbb8`).
+- Aligned `rs-05` velocity and torque limits with the RS05 manual (`bb5134e`).
+
+### Changed
+
+- Replaced `tianrking` org references with `motorbridge` across READMEs, Cargo
+  metadata, SECURITY/CoC contact, and pyproject (`bec79fb`). The `v0.5.0` tag
+  itself points at `082cbb8` (the rs-05 fix); the org rename and subsequent
+  URL fixes land on `main` after the tag.
+
+## See Also
+
+- [RobStride Parameter Tables](/reference/robstride-parameter-tables)

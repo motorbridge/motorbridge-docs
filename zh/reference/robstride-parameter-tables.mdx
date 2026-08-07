@@ -2,18 +2,18 @@
 
 <mintly-toc>
 
-MotorBridge v0.4.1 使用一张 RobStride 通用运行参数表，对齐协议第 4 章。
-
+MotorBridge v0.5.0 使用一张 RobStride 通用运行参数表，对齐协议第 4 章。
 </mintly-toc>
 
-MotorBridge 保持 RS 系列上层接口统一。当前 active 运行参数表是协议第 4 章“可读写单个参数列表”中的 `0x7005..0x702E`。v0.4.1 不把 `0x2000` / `0x3000` 手册功能码作为高层 active 运行参数。
+MotorBridge 保持 RS 系列上层接口统一。当前 active 运行参数表是协议第 4 章“可读写单个参数列表”中的 `0x7005..0x702E`。v0.5.0 不把 `0x2000` / `0x3000` 手册功能码作为高层 active 运行参数。
 
 ## 运行规则
 
 - 参数读写使用通信类型 17/18，加下面的参数 index。
 - 参数 index 小端放在 `byte[0..2]`；参数值小端放在 `byte[4..8]`。
-- 需要掉电保存的参数，写入后必须再发送 type 22 保存。v0.4.1 起，`robstride-write-param --store 1` 会执行写入、可选验证，然后保存。
-- RobStride `set_zero_position()` 上层接口不变，但内部会写 `zero_sta(0x7029)=1`，所以置零后使用 `-pi..pi` 区间。要掉电后仍保持，需要 `store_parameters` / `--store 1`。
+- 需要掉电保存的参数，写入后必须再发送 type 22 保存。v0.5.0 起，`robstride-write-param --store 1` 会执行写入、可选验证，然后保存。
+- **type 18 写 ACK 时序：** 通信类型 18 参数写入默认不阻塞。如需等待固件 ACK，设置 `MOTORBRIDGE_ROBSTRIDE_WRITE_ACK_TIMEOUT_MS` 启用保守的同步等待。
+- RobStride `set_zero_position()` 上层接口不变，会自动写 `zero_sta(0x7029)=1`，所以置零后使用 `-pi..pi` 区间。要掉电后仍保持，需要 `store_parameters` / `--store 1`。
 - type 22 保存 payload 为 `01 02 03 04 05 06 07 08`，并等待 RobStride 状态 ACK。
 
 ## 使用到的通信类型
@@ -62,7 +62,7 @@ MotorBridge 保持 RS 系列上层接口统一。当前 active 运行参数表�
 ### 保存与置零注意事项
 
 - `W/R` 或 `W` 只表示 CAN 上可写，不代表自动掉电保存。参数值需要掉电保持时，使用 `motorbridge-cli robstride-write-param ... --store 1`。`motorbridge-cli run --vendor robstride ... --mode save` 仍可作为直接保存动作使用。
-- RobStride 置零时，MotorBridge 保持和其他电机一致的上层命令；内部会发送 type 6，然后写 `zero_sta(0x7029)=1`。配合 `--store 1`，即可保存 `-pi..pi` 上电区间。
+- RobStride 置零时，MotorBridge 保持和其他电机一致的上层命令；会发送 type 6，然后写 `zero_sta(0x7029)=1`。配合 `--store 1`，即可保存 `-pi..pi` 上电区间。
 - 位置统一用 rad，速度用 rad/s，加速度/减速度用 rad/s^2。
 
 ## 示例
@@ -150,5 +150,27 @@ motorbridge-cli run \
   --loop 1 --dt-ms 20
 ```
 
-RobStride 路径中 MotorBridge 还会内部写 `zero_sta=1`，用于让启动后的范围按
+RobStride 路径中 MotorBridge 还会自动写 `zero_sta=1`，用于让启动后的范围按
 `-pi..pi` 处理。实际使用时请把示例里的 `rs-00` 换成真实电机型号，以便限值和日志正确。
+
+## PP / CSP 位置模式
+
+RobStride 专用 `pos-vel-pp` 和 `pos-vel-csp` 控制路径，分别对应厂商手册的
+PP（Profile Position）与 CSP（Cyclic Synchronous Position）位置模式。通过 C ABI
+（`robstride_send_pos_vel_pp()`、`robstride_send_pos_vel_csp()`）、Python 绑定以及
+Rust/Python CLI 暴露。
+
+```python
+# PP 写 vel_max(0x7024) + acc_set(0x7025) + loc_ref(0x7016)，run_mode=1。
+motor.robstride_send_pos_vel_pp(pos=1.0, vel_max=2.0, acc_set=10.0)
+# CSP 写 limit_spd(0x7017) + loc_ref(0x7016)，run_mode=5。
+motor.robstride_send_pos_vel_csp(pos=1.0, vlim=2.0)
+```
+
+<Note>
+PP 与 CSP 都把位置目标写入 `loc_ref`（`0x7016`），但速度/加速度寄存器不同——详见
+[API：Motor](/zh/api/motor#robstride_send_pos_vel_pppos-vel_max-acc_setrobstride)。
+PP/CSP 的完整手动序列每个控制周期都会等待一次 `enable` ACK。高速循环请使用
+预备 profile，每周期直接写 `loc_ref`；示例脚本 `robstride_posvel_timing_demo.py`
+对比了 legacy `pos-vel`、全序列 PP/CSP 与预备高速 profile 的时序。
+</Note>

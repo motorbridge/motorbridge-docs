@@ -15,7 +15,7 @@ The SDK exposes four transport constructors:
 | `Controller(channel)` | SocketCAN | Standard CAN 2.0, most common |
 | `Controller.from_socketcanfd(channel)` | CAN-FD | High-bandwidth, Hexfellow motors |
 | `Controller.from_dm_serial(port, baud)` | Serial | Damiao serial bridge adapter |
-| `Controller.from_dm_device(device_type, channel)` | DM_Device SDK | Damiao USB2CANFD / USB2CANFD_DUAL / LINKX4C adapters |
+| `Controller.from_dm_device(dm_device_type, dm_channel)` | DM_Device SDK | Damiao via USB2CANFD / USB2CANFD_DUAL / LINKX4C |
 
 ## SocketCAN (Standard CAN)
 
@@ -142,73 +142,6 @@ with Controller.from_dm_serial("/dev/ttyACM0", baud=921600) as ctrl:
 
 - Damiao only
 
-## DM_Device SDK
-
-DaMiao DM_Device_SDK controls CAN/CAN FD adapter hardware. In motorbridge, this
-transport is wired to the Damiao motor protocol only, and the adapter must be in
-USB mode.
-
-### Supported Adapter Types
-
-| Adapter | SDK enum | Channels | `dm_device_type` | `dm_channel` |
-|---------|----------|----------|------------------|--------------|
-| USB2CANFD | `USB2CANFD` | 1 | `usb2canfd` | `0` |
-| USB2CANFD_DUAL | `USB2CANFD_DUAL` | 2 | `usb2canfd-dual` | `0` / `1` |
-| LINKX4C | `LINKX4C` | 4 | `linkx4c` | `0` / `1` / `2` / `3` |
-
-### Python Usage
-
-```python
-from motorbridge import Controller
-
-# USB2CANFD_DUAL channel 0
-with Controller.from_dm_device("usb2canfd-dual", "0") as ctrl:
-    motor = ctrl.add_damiao_motor(0x04, 0x14, "4310")
-
-# LINKX4C channel 0
-with Controller.from_dm_device("linkx4c", "0") as ctrl:
-    motor = ctrl.add_damiao_motor(0x04, 0x14, "4310")
-```
-
-### CLI Usage
-
-```bash
-# Scan all channels on USB2CANFD_DUAL: 0 and 1
-motorbridge-cli scan \
-  --vendor damiao \
-  --transport dm-device \
-  --dm-device-type usb2canfd-dual \
-  --model 4310 \
-  --start-id 1 \
-  --end-id 16
-
-# Scan all channels on LINKX4C: 0, 1, 2, 3
-motorbridge-cli scan \
-  --vendor damiao \
-  --transport dm-device \
-  --dm-device-type linkx4c \
-  --model 4310 \
-  --start-id 1 \
-  --end-id 8
-
-# Control one physical channel
-motorbridge-cli run \
-  --vendor damiao \
-  --transport dm-device \
-  --dm-device-type linkx4c \
-  --dm-channel 0 \
-  --model 4310 \
-  --motor-id 0x04 \
-  --feedback-id 0x14 \
-  --mode enable \
-  --loop 1
-```
-
-<Note>
-In scan mode, omit `--dm-channel` to scan every channel for the selected
-adapter. Pass `--dm-channel` only when you want one physical channel.
-</Note>
-
 ### Serial Port Setup (3 Platforms)
 
 Linux:
@@ -243,6 +176,49 @@ Windows (PowerShell):
 | Damiao USB-CAN | /dev/ttyACM0 | Default |
 | USB-Serial Adapter | /dev/ttyUSB0 | Check with `dmesg` |
 
+## DM-Device (DM_Device SDK)
+
+Native Damiao transport backed by the DaMiao DM_Device SDK for the `USB2CANFD`, `USB2CANFD_DUAL`, and `LINKX4C` adapters. The adapter must be in USB mode; this transport is Damiao-only.
+
+### Usage
+
+```python
+from motorbridge import Controller
+
+# Open DM-Device transport
+with Controller.from_dm_device("usb2canfd", dm_channel=0) as ctrl:
+    motor = ctrl.add_damiao_motor(0x01, 0x11, "4340P")
+    # ... control motor
+```
+
+### Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `dm_device_type` | str | — | `usb2canfd`, `usb2canfd-dual`, or `linkx4c` |
+| `dm_channel` | int or None | None | Channel index. `usb2canfd` uses `0`; `usb2canfd-dual` uses `0`/`1`; `linkx4c` uses `0..3`. Omit to scan every channel for the selected adapter. |
+
+### Supported Vendors
+
+- Damiao only
+
+### Runtime Requirements
+
+Python wheels do not embed the vendor runtime. If the DM_Device runtime is missing, MotorBridge prints the required runtime file, its GitHub download URL, where to place it, and the platform ABI requirements.
+
+- Linux x86_64: `libusb-1.0.so.0`, `GLIBC_2.14+`, `libstdc++.so.6` with `GLIBCXX_3.4.32`
+- Linux aarch64: `GLIBC_2.17+`, `libstdc++.so.6` with `GLIBCXX_3.4.22+`
+
+Install the runtime on demand with the bundled helper:
+
+```bash
+motorbridge-install-dm-device
+```
+
+<Note>
+Windows DM_Device runtime selection is restricted to x86_64. Long-running processes reuse the already-open adapter instead of reopening it.
+</Note>
+
 ## Transport Selection Guide
 
 ### Decision Tree
@@ -252,7 +228,7 @@ What motor vendor are you using?
 │
 ├── Hexfellow ──→ from_socketcanfd (required)
 │
-├── Damiao with DM_Device USB2CANFD/DUAL/LINKX4C ──→ from_dm_device
+├── Damiao with USB2CANFD / USB2CANFD_DUAL / LINKX4C ──→ from_dm_device
 │
 ├── Damiao with USB-CAN adapter ──→ from_dm_serial
 │
@@ -295,6 +271,7 @@ Do not add motors from different vendors to the same `Controller` instance. Each
 | SocketCAN | ~1-2 ms | ~5000 msg/s |
 | CAN-FD | ~0.5-1 ms | ~10000 msg/s |
 | DM Serial | ~2-5 ms | ~2000 msg/s |
+| DM-Device | ~1-2 ms | ~5000 msg/s |
 
 ### Recommendations
 

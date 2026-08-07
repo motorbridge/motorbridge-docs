@@ -1,0 +1,50 @@
+---
+title: "MotorBridge 0.4.5 Release Test Note"
+---
+
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.4.5 Release Test Note
+
+Date: 2026-06-05
+
+## Summary
+
+Adds experimental RobStride standard-frame vendor paths (`robstride_cia402`,
+`robstride_mit`) and hardware gallery media.
+
+## Version Alignment
+
+| Component | Version |
+|---|---|
+| Git release tag | `v0.4.5` |
+| Rust workspace crates | `0.4.5` |
+| Python package | `0.4.5` |
+| C++ package metadata | `0.4.5` |
+
+## Key Changes
+
+### Added
+
+- Experimental RobStride standard-frame vendor paths: `robstride_cia402` for
+  CANopen/CiA402 (`F_CMD=1`) and `robstride_mit` for MIT (`F_CMD=2`). These
+  paths expose core CLI entry points and documentation but remain incomplete for
+  production use.
+- Hardware gallery media and adapter documentation for common CAN and Damiao
+  adapter setups.
+
+### Fixed
+
+- Improved Damiao `ensure_control_mode()` so failed mode-register verification
+  attempts retry the `RID 10` write before the next readback attempt, using a
+  conservative shared 20 ms retry gap.
+- Fixed a strict Clippy warning in motor CLI defaults.
+
+### Changed
+
+- Documented RobStride protocol ID roles across the private, CANopen/CiA402,
+  and MIT protocol paths.
+
+## See Also
+
+- [Experimental RobStride Paths](/source/vendors/robstride-experimental)

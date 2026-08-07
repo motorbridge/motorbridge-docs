@@ -1,0 +1,35 @@
+---
+title: "MotorBridge 0.4.4 Release Test Note"
+---
+
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.4.4 Release Test Note
+
+Date: 2026-06-04
+
+## Summary
+
+Hardens the `dm-device` transport: handle reuse, scan semantics, and write ACK
+verification.
+
+## Version Alignment
+
+| Component | Version |
+|---|---|
+| Git release tag | `v0.4.4` |
+| Rust workspace crates | `0.4.4` |
+| Python package | `0.4.4` |
+| C++ package metadata | `0.4.4` |
+
+## Key Changes
+
+### Fixed
+
+- Fixed repeated open behavior for long-running `dm-device` processes by
+  reusing the already-open SDK handle inside the C++ shim instead of reopening
+  the same USB adapter.
+
+## See Also
+
+- [DM-Device Transport](/source/transports/dm-device)

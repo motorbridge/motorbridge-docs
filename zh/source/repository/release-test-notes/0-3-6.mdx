@@ -1,0 +1,45 @@
+---
+title: "MotorBridge 0.3.6 发布测试说明"
+---
+
+<Note>Source: `release_test_notes/0.3.6.md`</Note>
+
+# MotorBridge 0.3.6 发布测试说明
+
+日期：2026-05-21
+
+## 概述
+
+在保持 Linux SocketCAN 行为稳定的前提下提升 Windows PCAN 下的 RobStride 扫描可靠性。统一 Python CLI 与 WebSocket 网关的扫描实现，围绕顺序、精确的 host/feedback ID 探测。
+
+## 版本对齐
+
+| 组件 | 版本 |
+|---|---|
+| Git 发布标签 | `v0.3.6` |
+| Rust workspace crates | `0.3.6` |
+| Python 包 | `0.3.6` |
+| C++ 包元数据 | `0.3.6` |
+
+## 主要变化
+
+### 修复
+
+- Python CLI RobStride 扫描同一时刻只打开一个 controller，避免多个 PCAN 接收 worker 在同一 Windows CAN 通道上竞争。
+- Python CLI 扫描清理不再对未绑定的探测 controller 调用 `close_bus()`，消除扫描末尾误导性的 `controller has no motor` 错误。
+- WebSocket 网关 RobStride 扫描改为顺序、精确地用 `ping_with_host_id()` / `get_parameter_with_host_id()` 探测 host/feedback ID。
+- WebSocket 网关 TCP accept 改用标准 listener 再交给 Tokio/Tungstenite，修复 Windows 回环客户端在 TCP 层连上但 WebSocket 握手超时的问题。
+- 后续 host-id 轮次跳过已发现的电机 ID。
+
+### 新增
+
+- WebSocket 网关响应 `{"op":"capabilities"}`，返回 `gateway_version`、厂商支持以及 `batch_scan` / `robstride_exact_host_scan` 标志。
+
+## 兼容性
+
+- Python binding 公共 API 与 CLI 入口保持兼容。
+- C ABI 符号名与签名保持稳定。
+
+## 相关
+
+- [变更日志](/zh/source/repository/overview)

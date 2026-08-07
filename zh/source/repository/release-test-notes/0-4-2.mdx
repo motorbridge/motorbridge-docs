@@ -1,0 +1,33 @@
+---
+title: "MotorBridge 0.4.2 发布测试说明"
+---
+
+<Note>Source: `CHANGELOG.md`</Note>
+
+# MotorBridge 0.4.2 发布测试说明
+
+日期：2026-06-03
+
+## 概述
+
+优化 Damiao `dm-serial` 后台轮询，收紧串口读超时。
+
+## 版本对齐
+
+| 组件 | 版本 |
+|---|---|
+| Git 发布标签 | `v0.4.2` |
+| Rust workspace crates | `0.4.2` |
+| Python 包 | `0.4.2` |
+| C++ 包元数据 | `0.4.2` |
+
+## 主要变化
+
+### 修复
+
+- 优化 Damiao `dm-serial` 后台轮询：`recv(0ms)` 执行真正的非阻塞排空，而非在无字节时等待串口读超时。
+- 将 Damiao 串口桥读超时由 2ms 降为 1ms，用于有界同步反馈/寄存器读，同时保留兼容回退。
+
+## 相关
+
+- [变更日志](/zh/source/repository/overview)
