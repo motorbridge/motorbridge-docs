@@ -16,14 +16,14 @@ The `dm-device` transport drives Damiao motors through the DaMiao DM_Device SDK 
 from motorbridge import Controller
 
 # USB2CANFD, channel 0
-with Controller.from_dm_device("usb2canfd", dm_channel=0) as ctrl:
+with Controller.from_dm_device("usb2canfd", dm_channel="0") as ctrl:
     motor = ctrl.add_damiao_motor(0x01, 0x11, "4340P")
 ```
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `dm_device_type` | `str` | — | `usb2canfd`, `usb2canfd-dual`, or `linkx4c` |
-| `dm_channel` | `int \| None` | `None` | `usb2canfd`: `0`; `usb2canfd-dual`: `0`/`1`; `linkx4c`: `0..3`. Omit to scan every channel for the selected adapter. |
+| `dm_channel` | `str` | `"0"` | `usb2canfd`: `"0"`; `usb2canfd-dual`: `"0"`/`"1"`; `linkx4c`: `"0"`..`"3"`. Default `"0"` (channel 0). |
 
 ## Adapter Reference
 

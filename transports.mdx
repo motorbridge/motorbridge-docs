@@ -186,7 +186,7 @@ Native Damiao transport backed by the DaMiao DM_Device SDK for the `USB2CANFD`, 
 from motorbridge import Controller
 
 # Open DM-Device transport
-with Controller.from_dm_device("usb2canfd", dm_channel=0) as ctrl:
+with Controller.from_dm_device("usb2canfd", dm_channel="0") as ctrl:
     motor = ctrl.add_damiao_motor(0x01, 0x11, "4340P")
     # ... control motor
 ```
@@ -196,7 +196,7 @@ with Controller.from_dm_device("usb2canfd", dm_channel=0) as ctrl:
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `dm_device_type` | str | — | `usb2canfd`, `usb2canfd-dual`, or `linkx4c` |
-| `dm_channel` | int or None | None | Channel index. `usb2canfd` uses `0`; `usb2canfd-dual` uses `0`/`1`; `linkx4c` uses `0..3`. Omit to scan every channel for the selected adapter. |
+| `dm_channel` | str | `"0"` | Channel index (string). `usb2canfd`: `"0"`; `usb2canfd-dual`: `"0"`/`"1"`; `linkx4c`: `"0"`..`"3"`. |
 
 ### Supported Vendors
 

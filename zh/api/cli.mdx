@@ -78,8 +78,8 @@ motorbridge-cli run [选项]
 | `--transport` | `auto` | 传输方式：auto, socketcan, socketcanfd, dm-serial, dm-device |
 | `--serial-port` | `/dev/ttyACM0` | 串口（用于 dm-serial 传输） |
 | `--serial-baud` | `921600` | 串口波特率 |
-| `--dm-device-type` | — | DM_Device 适配器类型（用于 dm-device 传输）：usb2canfd, usb2canfd-dual, linkx4c |
-| `--dm-channel` | — | DM_Device 通道。usb2canfd: 0；usb2canfd-dual: 0/1；linkx4c: 0..3。省略则扫描所有通道。 |
+| `--dm-device-type` | `usb2canfd-dual` | DM_Device 适配器类型（用于 dm-device 传输）：usb2canfd, usb2canfd-dual, linkx4c |
+| `--dm-channel` | `0` | DM_Device 通道。usb2canfd: 0；usb2canfd-dual: 0/1；linkx4c: 0/1/2/3。`scan` 时省略则扫描所有通道。 |
 | `--model` | `4340` | 电机型号字符串 |
 | `--motor-id` | `0x01` | 电机 CAN ID（支持十六进制） |
 | `--feedback-id` | `0x11` | 反馈 CAN ID（支持十六进制） |

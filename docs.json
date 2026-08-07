@@ -126,6 +126,22 @@
             "pages": [
               "source/python/overview",
               "source/python/get-started/overview",
+              {
+                "group": "Get-Started Courses",
+                "pages": [
+                  "source/python/get-started/courses/overview",
+                  "source/python/get-started/courses/00-enable-and-status",
+                  "source/python/get-started/courses/01-scan",
+                  "source/python/get-started/courses/02-register-rw",
+                  "source/python/get-started/courses/03-mode-switch-method",
+                  "source/python/get-started/courses/04-mode-mit",
+                  "source/python/get-started/courses/05-mode-pos-vel",
+                  "source/python/get-started/courses/06-mode-vel",
+                  "source/python/get-started/courses/07-mode-force-pos",
+                  "source/python/get-started/courses/08-mode-mixed-switch",
+                  "source/python/get-started/courses/09-multi-motor"
+                ]
+              },
               "source/python/examples/overview",
               "source/python/damiao-api",
               "source/python/damiao-binding",
@@ -284,6 +300,22 @@
             "pages": [
               "zh/source/python/overview",
               "zh/source/python/get-started/overview",
+              {
+                "group": "入门课程",
+                "pages": [
+                  "zh/source/python/get-started/courses/overview",
+                  "zh/source/python/get-started/courses/00-enable-and-status",
+                  "zh/source/python/get-started/courses/01-scan",
+                  "zh/source/python/get-started/courses/02-register-rw",
+                  "zh/source/python/get-started/courses/03-mode-switch-method",
+                  "zh/source/python/get-started/courses/04-mode-mit",
+                  "zh/source/python/get-started/courses/05-mode-pos-vel",
+                  "zh/source/python/get-started/courses/06-mode-vel",
+                  "zh/source/python/get-started/courses/07-mode-force-pos",
+                  "zh/source/python/get-started/courses/08-mode-mixed-switch",
+                  "zh/source/python/get-started/courses/09-multi-motor"
+                ]
+              },
               "zh/source/python/examples/overview",
               "zh/source/python/damiao-api",
               "zh/source/python/damiao-python-reference"

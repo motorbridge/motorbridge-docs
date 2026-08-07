@@ -1,45 +1,45 @@
 ---
-title: "09 多电机单次查询"
+title: "09 Multi-Motor Single Query"
 ---
 
-## 本节目标
+## Goal
 
-- 同厂商多电机：一个 Controller 下多个 motor handle，一次性查状态。
-- 多厂商混合：多个 Controller 并行，一次性查状态。
+- Same-vendor multi-motor: multiple motor handles under one Controller, query state in one pass.
+- Multi-vendor mixed: multiple Controllers in parallel, query state in one pass.
 
-## 运行
+## Run
 
 ```bash
 python3 bindings/python/get_started/courses/09-multi-motor.py
 ```
 
-## 说明
+## Notes
 
-- Damiao 使用 `DAMIAO_MOTORS` 列表配置，可任意增加数量。
-- MyActuator 使用 `USE_MYACTUATOR` + `MYACTUATOR_MOTORS`。
-- RobStride 使用 `USE_ROBSTRIDE` + `ROBSTRIDE_MOTORS`。
-- 当前统一按 `request_feedback() + poll_feedback_once() + get_state()` 调用（兼容写法）。
-- `RETRY_ENABLED=True`：开启“查询重试”，可显著减少 `None`。
-- `MAX_RETRIES` / `RETRY_DT_MS`：控制重试次数和间隔。
+- Damiao uses a `DAMIAO_MOTORS` list; add as many as you need.
+- MyActuator uses `USE_MYACTUATOR` + `MYACTUATOR_MOTORS`.
+- RobStride uses `USE_ROBSTRIDE` + `ROBSTRIDE_MOTORS`.
+- The unified call is `request_feedback() + poll_feedback_once() + get_state()` (compat form).
+- `RETRY_ENABLED=True`: enables query retry, which greatly reduces `None`.
+- `MAX_RETRIES` / `RETRY_DT_MS`: control retry count and interval.
 
-版本说明：
-- `<= v0.1.6`：建议保留 `poll_feedback_once()`。
-- `v0.1.7+`：默认后台轮询已开启，手动 `poll_feedback_once()` 通常可省略。
+Version notes:
+- `<= v0.1.6`: keep `poll_feedback_once()`.
+- `v0.1.7+`: background polling is on by default; manual `poll_feedback_once()` is usually optional.
 
-## 如何新增更多 Damiao（重点）
+## How to add more Damiao motors
 
-在 `DAMIAO_MOTORS` 里新增一行，例如：
+Add a row to `DAMIAO_MOTORS`, e.g.:
 
 ```python
 {"name": "dm3", "id": 0x01, "fid": 0x11, "model": "4340P"},
 ```
 
-你扫描到的示例：
+Example scan results:
 - `probe=0x01` -> `mst_id=0x11`
 - `probe=0x04` -> `mst_id=0x14`
 - `probe=0x07` -> `mst_id=0x17`
 
-对应可直接写成：
+You can write them directly as:
 
 ```python
 DAMIAO_MOTORS = [
@@ -49,29 +49,29 @@ DAMIAO_MOTORS = [
 ]
 ```
 
-## 如何删除某个电机/品牌
+## How to remove a motor or brand
 
-- 删除电机：从对应列表删掉那一行。
-- 关闭某品牌：把 `USE_MYACTUATOR` 或 `USE_ROBSTRIDE` 设为 `False`。
+- Remove a motor: delete its row from the list.
+- Disable a brand: set `USE_MYACTUATOR` or `USE_ROBSTRIDE` to `False`.
 
-## 如何新增“全新品牌”支持（代码层）
+## How to add a brand-new vendor (code level)
 
-如果后续要加一个当前脚本里没有的新品牌（例如 `hightorque`）：
+To add a vendor not yet in the script (e.g. `hightorque`):
 
-1. 新增该品牌配置列表和开关。
-2. 新增 `attach_xxx(ctrl, cfgs)`，内部调用对应 `ctrl.add_xxx_motor(...)`。
-3. 在 `main()` 里新建该品牌 controller，执行：
+1. Add that vendor's config list and switch.
+2. Add `attach_xxx(ctrl, cfgs)` that calls `ctrl.add_xxx_motor(...)` internally.
+3. In `main()`, create that vendor's controller and run:
    - `ctrl.enable_all()`
    - `states = query_states_with_retry(ctrl, motors)`
    - `append_states(out, names, states)`
 
-这样可以保证扩展后仍保持统一调用范式，客户读起来不混乱。
+This keeps a unified calling pattern after extension, so the code stays readable.
 
-## RobStride 先扫再填（建议）
+## RobStride: scan then fill (recommended)
 
 ```bash
 python3 bindings/python/get_started/courses/01-scan.py
 ```
 
-建议把 `01-scan.py` 中 `VENDOR` 改成 `robstride`，确认扫到的 id 后再回填
-`ROBSTRIDE_MOTORS`。
+Set `VENDOR` to `robstride` in `01-scan.py`, confirm the scanned ids, then fill
+them back into `ROBSTRIDE_MOTORS`.

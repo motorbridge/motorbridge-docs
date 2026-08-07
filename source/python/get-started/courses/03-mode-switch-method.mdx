@@ -1,18 +1,18 @@
 ---
-title: "03 模式切换方法"
+title: "03 Mode Switching"
 ---
 
-## 本节目标
+## Goal
 
-掌握统一模式切换接口：`motor.ensure_mode(...)`。
+Master the unified mode-switch API: `motor.ensure_mode(...)`.
 
-## 运行
+## Run
 
 ```bash
 python3 bindings/python/get_started/courses/03-mode-switch-method.py
 ```
 
-## 重点
+## Key Points
 
-- 切模式前先 `enable_all()`。
-- 切模式后先读一次状态确认。
+- Call `enable_all()` before switching modes.
+- Read state once after switching to confirm.

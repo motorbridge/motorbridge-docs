@@ -189,7 +189,7 @@ Windows（PowerShell）：
 from motorbridge import Controller
 
 # 打开 DM-Device 传输
-with Controller.from_dm_device("usb2canfd", dm_channel=0) as ctrl:
+with Controller.from_dm_device("usb2canfd", dm_channel="0") as ctrl:
     motor = ctrl.add_damiao_motor(0x01, 0x11, "4340P")
     # ... 控制电机
 ```
@@ -199,7 +199,7 @@ with Controller.from_dm_device("usb2canfd", dm_channel=0) as ctrl:
 | 参数 | 类型 | 默认值 | 描述 |
 |------|------|--------|------|
 | `dm_device_type` | str | — | `usb2canfd`、`usb2canfd-dual` 或 `linkx4c` |
-| `dm_channel` | int 或 None | None | 通道号。`usb2canfd` 用 `0`；`usb2canfd-dual` 用 `0`/`1`；`linkx4c` 用 `0..3`。省略则扫描所选适配器的所有通道。 |
+| `dm_channel` | str | `"0"` | 通道号（字符串）。`usb2canfd`：`"0"`；`usb2canfd-dual`：`"0"`/`"1"`；`linkx4c`：`"0"`..`"3"`。 |
 
 ### 支持的厂商
 

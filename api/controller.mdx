@@ -103,7 +103,7 @@ with Controller.from_dm_serial("/dev/ttyACM0", 921600) as ctrl:
 
 ---
 
-### `Controller.from_dm_device(dm_device_type, dm_channel=None)` (classmethod)
+### `Controller.from_dm_device(dm_device_type="usb2canfd-dual", dm_channel="0")` (classmethod)
 
 Create a controller using the Damiao DM_Device SDK transport (`USB2CANFD`,
 `USB2CANFD_DUAL`, `LINKX4C`). The adapter must be in USB mode; this transport
@@ -114,7 +114,7 @@ is currently Damiao-only.
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
 | `dm_device_type` | `str` | — | `usb2canfd`, `usb2canfd-dual`, or `linkx4c` |
-| `dm_channel` | `int \| None` | `None` | Channel index. `usb2canfd`: `0`; `usb2canfd-dual`: `0`/`1`; `linkx4c`: `0..3`. `None` scans every channel for the selected adapter. |
+| `dm_channel` | `str` | `"0"` | Channel index (string). `usb2canfd`: `"0"`; `usb2canfd-dual`: `"0"`/`"1"`; `linkx4c`: `"0"`..`"3"`. Default `"0"` (channel 0). |
 
 **Returns:** `Controller` instance
 
@@ -125,7 +125,7 @@ is currently Damiao-only.
 ```python
 from motorbridge import Controller
 
-with Controller.from_dm_device("usb2canfd", dm_channel=0) as ctrl:
+with Controller.from_dm_device("usb2canfd", dm_channel="0") as ctrl:
     motor = ctrl.add_damiao_motor(0x01, 0x11, "4340P")
 ```
 

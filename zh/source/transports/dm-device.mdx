@@ -16,14 +16,14 @@ title: "DM-Device 传输（DM_Device SDK）"
 from motorbridge import Controller
 
 # USB2CANFD，通道 0
-with Controller.from_dm_device("usb2canfd", dm_channel=0) as ctrl:
+with Controller.from_dm_device("usb2canfd", dm_channel="0") as ctrl:
     motor = ctrl.add_damiao_motor(0x01, 0x11, "4340P")
 ```
 
 | 参数 | 类型 | 默认值 | 描述 |
 |------|------|--------|------|
 | `dm_device_type` | `str` | — | `usb2canfd`、`usb2canfd-dual` 或 `linkx4c` |
-| `dm_channel` | `int \| None` | `None` | `usb2canfd`: `0`；`usb2canfd-dual`: `0`/`1`；`linkx4c`: `0..3`。省略则扫描所选适配器的所有通道。 |
+| `dm_channel` | `str` | `"0"` | `usb2canfd`：`"0"`；`usb2canfd-dual`：`"0"`/`"1"`；`linkx4c`：`"0"`..`"3"`。默认 `"0"`（通道 0）。 |
 
 ## 适配器参考
 

@@ -1,0 +1,221 @@
+---
+title: "Python Binding Course Overview"
+---
+
+This course is the hands-on mainline for `bindings/python`. The goal is to help you master all core APIs following the real motor usage flow.
+
+Course file convention:
+
+- `xx-*.py`: runnable directly
+- `xx-*.md`: explanation, parameters, and notes for that lesson
+
+---
+
+## 1. Build a Unified Mental Model First
+
+In real projects, always understand the flow along this chain:
+
+1. Choose transport (`Controller(...)` / `from_socketcanfd(...)` / `from_dm_serial(...)` / `from_dm_device(...)`)
+2. Add motor (`add_*_motor(...)`)
+3. Enable (`enable_all()`)
+4. Mode (`ensure_mode(...)`)
+5. Send (`send_*`)
+6. Feedback (`request_feedback()`)
+7. Read state (`get_state()`)
+
+State-fetch version notes:
+
+- `<= v0.1.6`: manual `poll_feedback_once()` recommended
+- `v0.1.7+`: background polling on by default; `get_state()` usually suffices
+
+---
+
+## 2. Course Order (by engineering practice)
+
+### 00 `enable-and-status`
+
+Goal:
+
+- Run the minimal loop: communicate, enable, read state
+
+Key APIs:
+
+- `enable_all`
+- `request_feedback`
+- `get_state`
+- `poll_feedback_once` (compat)
+
+### 01 `scan`
+
+Goal:
+
+- Scan online motors, confirm `motor_id / feedback_id / model`
+
+Key API/command:
+
+- `motorbridge-cli scan`
+
+### 02 `register-rw`
+
+Goal:
+
+- Read/write register parameters, understand "control params" vs "device params"
+
+Key APIs:
+
+- `get_register_u32/f32`
+- `write_register_u32/f32`
+- `store_parameters`
+
+### 03 `mode-switch-method`
+
+Goal:
+
+- Unified mode switching, avoid "command/mode mismatch"
+
+Key API:
+
+- `ensure_mode(Mode.*, timeout_ms)`
+
+### 04 / 05 / 06 / 07 single-mode lessons
+
+Goal:
+
+- Master `MIT / POS_VEL / VEL / FORCE_POS` independently
+
+Key APIs:
+
+- `send_mit`
+- `send_pos_vel`
+- `send_vel`
+- `send_force_pos`
+
+### 08 `mode-mixed-switch`
+
+Goal:
+
+- Safely switch multiple modes within one program
+
+Key APIs:
+
+- `ensure_mode` + each `send_*`
+
+### 09 `multi-motor`
+
+Goal:
+
+- Same-vendor multi-motor and cross-vendor multi-controller unified query
+
+Key APIs:
+
+- `add_*_motor`
+- `request_feedback`
+- `get_state`
+
+---
+
+## 3. Full Binding API Cheatsheet (no ambiguity)
+
+### Controller API
+
+Constructors:
+
+- `Controller(channel="can0")`
+- `Controller.from_socketcanfd(channel="can0")`
+- `Controller.from_dm_serial(serial_port, baud)`
+- `Controller.from_dm_device(dm_device_type, dm_channel)`
+
+Lifecycle:
+
+- `close()`
+- `shutdown()`
+- `close_bus()`
+
+Controller-level ops:
+
+- `enable_all()`
+- `disable_all()`
+- `poll_feedback_once()`
+
+Attach motors:
+
+- `add_damiao_motor(...)`
+- `add_robstride_motor(...)`
+- `add_myactuator_motor(...)`
+- `add_hightorque_motor(...)`
+- `add_hexfellow_motor(...)`
+
+### Motor API
+
+Lifecycle and maintenance:
+
+- `close()`
+- `enable()` / `disable()`
+- `clear_error()`
+- `set_zero_position()`
+
+Mode and control:
+
+- `ensure_mode(mode, timeout_ms=1000)`
+- `send_mit(pos, vel, kp, kd, tau)`
+- `send_pos_vel(pos, vlim)`
+- `send_vel(vel)`
+- `send_force_pos(pos, vlim, ratio)`
+
+Feedback and state:
+
+- `request_feedback()`
+- `get_state()` -> `MotorState | None`
+
+Generic registers:
+
+- `set_can_timeout_ms(timeout_ms)`
+- `store_parameters()`
+- `write_register_u32/f32(...)`
+- `get_register_u32/f32(...)`
+
+RobStride-specific:
+
+- `robstride_ping()`
+- `robstride_set_device_id(...)`
+- `robstride_get_param_* / robstride_write_param_*`
+
+---
+
+## 4. Sensible Motor Usage Habits (strongly recommended)
+
+1. Scan before you control; do not send blindly.
+2. Keep only one sender process running to avoid `os error 105`.
+3. Start with a conservative control period: `DT_MS=20~50`.
+4. `enable + status` first, then enter a control mode.
+5. On errors, check three things first: ID, baud rate, and transport type (socketcan/socketcanfd/dm-serial).
+
+---
+
+## 5. Recommended Learning Commands
+
+```bash
+python3 bindings/python/get_started/courses/00-enable-and-status.py
+python3 bindings/python/get_started/courses/01-scan.py
+python3 bindings/python/get_started/courses/03-mode-switch-method.py
+python3 bindings/python/get_started/courses/09-multi-motor.py
+```
+
+---
+
+## 6. Cross-link with Mintlify Docs
+
+For the full tutorial + API-reference docs site, see:
+
+- `../motorbridge-docs`
+- Key pages: `sdk/python/reference.mdx`, `zh/sdk/python/reference.mdx`
+
+Local preview:
+
+```bash
+cd ../motorbridge-docs
+npx mintlify dev
+```
+
+
+For transport troubleshooting, see docs/zh/can_debugging.md (covers can0 and slcan0 setup).
